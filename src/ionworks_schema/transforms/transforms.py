@@ -8,7 +8,18 @@ from ..base import BaseSchema
 
 
 class Exp(BaseSchema):
-    """Schema for Exp."""
+    """Exponential transform.
+
+    Transforms a parameter by taking e raised to the power of the parameter value.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is monotonic"""
 
     parameter: Any = Field(...)
 
@@ -17,7 +28,18 @@ class Exp(BaseSchema):
 
 
 class Identity(BaseSchema):
-    """Schema for Identity."""
+    """Identity transform.
+
+    A transform that returns the input unchanged. Useful as a placeholder or for testing.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is monotonic"""
 
     parameter: Any = Field(...)
 
@@ -26,7 +48,19 @@ class Identity(BaseSchema):
 
 
 class Inverse(BaseSchema):
-    """Schema for Inverse."""
+    """Inverse (1/x) transform.
+
+    Transforms a parameter by taking its reciprocal (1/x). Cannot be used with zero values.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is not monotonic
+    - Input values cannot be zero"""
 
     parameter: Any = Field(...)
 
@@ -35,7 +69,19 @@ class Inverse(BaseSchema):
 
 
 class Log(BaseSchema):
-    """Schema for Log."""
+    """Natural logarithm transform.
+
+    Transforms a parameter by taking its natural logarithm. Only works with positive values.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is monotonic
+    - Input values must be positive"""
 
     parameter: Any = Field(...)
 
@@ -44,7 +90,19 @@ class Log(BaseSchema):
 
 
 class Log10(BaseSchema):
-    """Schema for Log10."""
+    """Logarithm base 10 transform.
+
+    Transforms a parameter by taking its base-10 logarithm. Only works with positive values.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is monotonic
+    - Input values must be positive"""
 
     parameter: Any = Field(...)
 
@@ -53,7 +111,18 @@ class Log10(BaseSchema):
 
 
 class Negate(BaseSchema):
-    """Schema for Negate."""
+    """Negate transform.
+
+    Transforms a parameter by negating its value (-x).
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is not monotonic"""
 
     parameter: Any = Field(...)
 
@@ -62,7 +131,18 @@ class Negate(BaseSchema):
 
 
 class Pow10(BaseSchema):
-    """Schema for Pow10."""
+    """Power of 10 transform.
+
+    Transforms a parameter by raising 10 to the power of the parameter value.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Notes
+    -----
+    - The transform is monotonic"""
 
     parameter: Any = Field(...)
 
@@ -71,7 +151,27 @@ class Pow10(BaseSchema):
 
 
 class Transform(BaseSchema):
-    """Schema for Transform."""
+    """Base class for parameter transformations.
+
+    This class provides functionality to transform parameters between different spaces
+    (e.g., log space, exponential space) while maintaining the parameter bounds and
+    initial values. Transforms can be chained together.
+
+    Parameters
+    ----------
+    parameter : Transform or Parameter
+        The parameter to transform.
+
+    Attributes
+    ----------
+    parent : Transform or None
+        The parent transform in a chain of transforms.
+    child : Transform or Parameter
+        The child transform/parameter in a chain of transforms.
+    base_parameter : Parameter
+        The original parameter being transformed.
+    monotonic_transform : bool
+        Whether this transform is monotonic."""
 
     parameter: Any = Field(...)
 

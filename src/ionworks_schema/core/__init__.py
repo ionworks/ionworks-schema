@@ -4,4 +4,4 @@ from .core import (
     ConfigMixin,
 )
 
-__all__ = ['ConfigMixin']
+__all__ = ["ConfigMixin"]

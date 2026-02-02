@@ -11,4 +11,4 @@ from .transforms import (
     Transform,
 )
 
-__all__ = ['Exp', 'Identity', 'Inverse', 'Log', 'Log10', 'Negate', 'Pow10', 'Transform']
+__all__ = ["Exp", "Identity", "Inverse", "Log", "Log10", "Negate", "Pow10", "Transform"]

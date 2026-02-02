@@ -5,4 +5,4 @@ from .models import (
     MSMRHalfCellModel,
 )
 
-__all__ = ['MSMRFullCellModel', 'MSMRHalfCellModel']
+__all__ = ["MSMRFullCellModel", "MSMRHalfCellModel"]

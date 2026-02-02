@@ -37,6 +37,9 @@ venv/
 .coverage
 htmlcov/
 
+# Ruff
+.ruff_cache/
+
 # Build
 *.whl
 *.tar.gz

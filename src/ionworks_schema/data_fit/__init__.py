@@ -5,4 +5,4 @@ from .data_fit import (
     DataFit,
 )
 
-__all__ = ['ArrayDataFit', 'DataFit']
+__all__ = ["ArrayDataFit", "DataFit"]

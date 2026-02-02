@@ -29,7 +29,7 @@ class _DistributionBase(BaseSchema):
 
 
 class Dirichlet(_DistributionBase):
-    """Schema for Dirichlet."""
+    """Dirichlet distribution."""
 
     alpha: Any = Field(...)
 
@@ -38,7 +38,7 @@ class Dirichlet(_DistributionBase):
 
 
 class Distribution(BaseSchema):
-    """Schema for Distribution."""
+    """Base class for sampling from probability distributions."""
 
     distribution: Any | None = Field(default=None)
 
@@ -47,7 +47,7 @@ class Distribution(BaseSchema):
 
 
 class LogNormal(_DistributionBase):
-    """Schema for LogNormal."""
+    """Univariate lognormal distribution."""
 
     mean: Any = Field(...)
     std: Any = Field(...)
@@ -57,7 +57,7 @@ class LogNormal(_DistributionBase):
 
 
 class MultivariateLogNormal(_DistributionBase):
-    """Schema for MultivariateLogNormal."""
+    """Multivariate lognormal distribution."""
 
     mean: Any = Field(...)
     cov: Any = Field(...)
@@ -67,7 +67,7 @@ class MultivariateLogNormal(_DistributionBase):
 
 
 class MultivariateNormal(_DistributionBase):
-    """Schema for MultivariateNormal."""
+    """Multivariate normal distribution."""
 
     mean: Any = Field(...)
     cov: Any = Field(...)
@@ -77,7 +77,7 @@ class MultivariateNormal(_DistributionBase):
 
 
 class Normal(_DistributionBase):
-    """Schema for Normal."""
+    """Univariate normal distribution."""
 
     mean: Any = Field(...)
     std: Any = Field(...)
@@ -87,7 +87,7 @@ class Normal(_DistributionBase):
 
 
 class PointMass(_DistributionBase):
-    """Schema for PointMass."""
+    """PointMass distribution (constant value)."""
 
     value: Any = Field(...)
 
@@ -96,7 +96,7 @@ class PointMass(_DistributionBase):
 
 
 class Uniform(_DistributionBase):
-    """Schema for Uniform."""
+    """Uniform distribution."""
 
     lb: Any = Field(...)
     ub: Any = Field(...)

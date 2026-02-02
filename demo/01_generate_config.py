@@ -13,11 +13,11 @@ from pathlib import Path
 
 # ionworks_schema provides pydantic schemas for config generation
 import ionworks_schema as iws
-import pandas as pd
-import pybamm
 
 # ionworksdata is used for data loading
 import ionworksdata as iwdata
+import pandas as pd
+import pybamm
 
 
 def main():

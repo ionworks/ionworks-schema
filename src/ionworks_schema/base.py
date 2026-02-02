@@ -47,6 +47,11 @@ class BaseSchema(BaseModel):
         arbitrary_types_allowed=True,
     )
 
+    # Field name mappings for parser compatibility
+    _field_mappings = {"data_input": "data"}
+    # Fields to exclude from serialization (comes from dict key in parser)
+    _exclude_fields: set = set()
+
     def to_config(self) -> dict:
         """Convert to configuration dictionary."""
         config = {}
@@ -54,7 +59,12 @@ class BaseSchema(BaseModel):
         for key, value in self:
             if value is None:
                 continue
-            config[key] = _serialize_value(value)
+            # Skip excluded fields
+            if key in self._exclude_fields:
+                continue
+            # Apply field name mappings for parser compatibility
+            output_key = self._field_mappings.get(key, key)
+            config[output_key] = _serialize_value(value)
         # Add type field based on class name (except for top-level containers)
         cls_name = self.__class__.__name__
         if cls_name not in (
