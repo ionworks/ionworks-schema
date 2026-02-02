@@ -1,37 +1,46 @@
-# ionworksschema Demo
+# ionworks-schema Demo
 
-This demo shows how to use `ionworksschema` to build pipeline configurations
+This demo shows how to use `ionworks_schema` to build pipeline configurations
 and run them with `ionworkspipeline`.
+
+## Requirements
+
+- **Config generation (01_generate_config.py)**: Only requires `ionworks-schema`
+- **Config execution (02_run_config.py)**: Requires `ionworkspipeline` (which includes PyBaMM)
 
 ## Setup
 
 ```bash
-# Install ionworksschema (from repo root)
-pip install -e ./ionworksschema
+# Install ionworks-schema (lightweight, for config generation)
+pip install ionworks-schema
+
+# To run the execution demo, also install ionworkspipeline
+pip install ionworkspipeline
 ```
 
 ## Usage
 
 ```bash
-# 1. Generate synthetic data
+# 1. Generate synthetic data (requires numpy/pandas only)
 python generate_synthetic_data.py
 
-# 2. Build config using ionworksschema (no execution logic needed)
+# 2. Build config using ionworks_schema (no pybamm needed)
 python 01_generate_config.py
 
-# 3. Run config using ionworkspipeline (execution happens here)
+# 3. Run config using ionworkspipeline (requires pybamm)
 python 02_run_config.py
 ```
 
 ## What This Demonstrates
 
-1. **ionworksschema** - Pydantic schemas for config generation
+1. **ionworks_schema** - Lightweight config generation
    - Material library access
    - Parameter definitions with bounds
    - Objective and pipeline construction
    - JSON export for API submission
+   - No PyBaMM dependency
 
-2. **ionworkspipeline** - Execution (cloud-side)
+2. **ionworkspipeline** - Execution (requires PyBaMM)
    - Parse JSON config into Pipeline objects
    - Run the fitting
    - Plot results
