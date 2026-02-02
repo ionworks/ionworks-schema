@@ -1,0 +1,228 @@
+{
+  "elements": {
+    "cathode_ocp_fit": {
+      "objectives": {
+        "ocp": {
+          "options": {
+            "dUdQ cutoff": 0.2681048690637935,
+            "model": {
+              "type": "MSMRHalfCellModel",
+              "electrode": "positive",
+              "options": {
+                "species format": "Xj"
+              }
+            }
+          },
+          "data": {
+            "data": {
+              "Capacity [A.h]": [
+                0.0,
+                2.290717198398669e-06,
+                4.581434396797338e-06,
+                9.162868793594676e-06,
+                1.8325737587189352e-05,
+                3.6651475174378705e-05,
+                7.330295034875741e-05,
+                0.0001466059006975,
+                0.000293211801395,
+                0.00058642360279,
+                0.000879635404185,
+                0.0014660590069751,
+                0.0020524826097652,
+                0.0032253298153453,
+                0.0043981770209254,
+                0.0055710242265055,
+                0.0067438714320856,
+                0.0090895658432459,
+                0.0114352602544061,
+                0.0137809546655663,
+                0.0184723434878868,
+                0.0231637323102073,
+                0.0278551211325278,
+                0.0325465099548482,
+                0.0372378987771687,
+                0.0466206764218097,
+                0.0560034540664506,
+                0.0653862317110916,
+                0.0747690093557325,
+                0.0841517870003735,
+                0.0935345646450144,
+                0.1029173422896553,
+                0.1123001199342963,
+                0.1310656752235782,
+                0.1498312305128601,
+                0.168596785802142,
+                0.2061278963807058,
+                0.2436590069592696,
+                0.3187212281163972,
+                0.4688456704306524,
+                0.7690945550591628,
+                1.3695923243161836,
+                2.570587862830225,
+                4.972578939858307,
+                5.090369107198526
+              ],
+              "Voltage [V]": [
+                4.171838935897758,
+                4.170560855864058,
+                4.172124656711739,
+                4.1738591741957345,
+                4.170312699976725,
+                4.1702493560590534,
+                4.1737526794803035,
+                4.171895026995409,
+                4.1689968963896735,
+                4.1703045069158104,
+                4.167710191947887,
+                4.166757953904461,
+                4.167425346827823,
+                4.161875814488516,
+                4.161246155191743,
+                4.162691035007549,
+                4.160988471326327,
+                4.162213798544704,
+                4.158457512026092,
+                4.156240129450674,
+                4.159787517886226,
+                4.154406984748084,
+                4.153140104060701,
+                4.148406131684993,
+                4.148500329676347,
+                4.14666101328714,
+                4.141159509773154,
+                4.1413665528523165,
+                4.1366828340739135,
+                4.134673571948915,
+                4.131518307477213,
+                4.13397347876114,
+                4.127867212878989,
+                4.121259956715035,
+                4.120812147394917,
+                4.112824917751088,
+                4.108810590351774,
+                4.098817446656715,
+                4.092080624023234,
+                4.087527408237065,
+                4.065121898849097,
+                3.9588114546804136,
+                3.729753474868685,
+                2.8896612944819227,
+                2.4970429560182454
+              ]
+            },
+            "options": {
+              "sort": true,
+              "remove_duplicates": true
+            }
+          },
+          "type": "MSMRHalfCell"
+        }
+      },
+      "source": "",
+      "parameters": {
+        "Ambient temperature [K]": 298.15,
+        "Number of reactions in positive electrode": 4,
+        "Positive electrode capacity [A.h]": {
+          "initial_value": 5.090369107198526,
+          "bounds": [
+            4.988561725054556,
+            6.108442928638231
+          ]
+        },
+        "Positive electrode lower excess capacity [A.h]": {
+          "initial_value": 0.050903691071985266,
+          "bounds": [
+            0,
+            0.25451845535992634
+          ]
+        },
+        "Positive electrode host site standard potential (0) [V]": {
+          "initial_value": 3.6,
+          "bounds": [
+            3.1,
+            4.1
+          ]
+        },
+        "Positive electrode host site standard potential (1) [V]": {
+          "initial_value": 3.7,
+          "bounds": [
+            3.2,
+            4.2
+          ]
+        },
+        "Positive electrode host site standard potential (2) [V]": {
+          "initial_value": 3.9,
+          "bounds": [
+            3.4,
+            4.4
+          ]
+        },
+        "Positive electrode host site standard potential (3) [V]": {
+          "initial_value": 4.2,
+          "bounds": [
+            3.7,
+            4.7
+          ]
+        },
+        "Positive electrode host site occupancy fraction (0)": {
+          "initial_value": 0.131313,
+          "bounds": [
+            0.01,
+            0.99
+          ]
+        },
+        "Positive electrode host site occupancy fraction (1)": {
+          "initial_value": 0.323232,
+          "bounds": [
+            0.01,
+            0.99
+          ]
+        },
+        "Positive electrode host site occupancy fraction (2)": {
+          "initial_value": 0.212121,
+          "bounds": [
+            0.01,
+            0.99
+          ]
+        },
+        "Positive electrode host site occupancy fraction (3)": {
+          "initial_value": 0.333333,
+          "bounds": [
+            0.01,
+            0.99
+          ]
+        },
+        "Positive electrode host site ideality factor (0)": {
+          "initial_value": 1,
+          "bounds": [
+            0.1,
+            20.0
+          ]
+        },
+        "Positive electrode host site ideality factor (1)": {
+          "initial_value": 1.4,
+          "bounds": [
+            0.1,
+            20.0
+          ]
+        },
+        "Positive electrode host site ideality factor (2)": {
+          "initial_value": 3.5,
+          "bounds": [
+            0.1,
+            20.0
+          ]
+        },
+        "Positive electrode host site ideality factor (3)": {
+          "initial_value": 5.5,
+          "bounds": [
+            0.1,
+            20.0
+          ]
+        }
+      },
+      "multistarts": 50,
+      "element_type": "data_fit"
+    }
+  }
+}
