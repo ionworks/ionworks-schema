@@ -18,8 +18,11 @@ from . import (
 
 # Common classes at top level
 from .base import BaseSchema, Pipeline
+from .data_fit import DataFit
 from .direct_entries import DirectEntry
 from .library import Library, Material
+from .objectives import MSMRFullCell, MSMRHalfCell
+from .parameter import Parameter
 
 __all__ = [
     "BaseSchema",
@@ -27,6 +30,10 @@ __all__ = [
     "DirectEntry",
     "Material",
     "Library",
+    "Parameter",
+    "DataFit",
+    "MSMRHalfCell",
+    "MSMRFullCell",
     "calculations",
     "core",
     "data_fit",
