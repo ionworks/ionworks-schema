@@ -46,7 +46,6 @@ select = [
 ]
 ignore = [
     "E501",   # line too long (handled by formatter)
-    "UP038",  # Use X | Y in isinstance (not supported in all Python versions)
 ]
 
 [tool.ruff.format]

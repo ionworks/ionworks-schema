@@ -11,10 +11,7 @@ No execution logic is needed - ionworks_schema is a lightweight package.
 import json
 from pathlib import Path
 
-# ionworks_schema provides pydantic schemas for config generation
 import ionworks_schema as iws
-
-# ionworksdata is used for data loading
 import ionworksdata as iwdata
 import pandas as pd
 import pybamm
