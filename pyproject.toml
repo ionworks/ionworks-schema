@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ionworks-schema"
-version = "0.14.1"
+dynamic = ["version"]
 description = "Pydantic schemas for building Ionworks pipeline configurations"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,10 @@ Repository = "https://github.com/ionworks/ionworks-schema"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools_scm]
+write_to = "src/ionworks_schema/_version.py"
+fallback_version = "0.0.0"
 
 [tool.ruff]
 line-length = 88

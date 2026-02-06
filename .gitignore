@@ -43,3 +43,6 @@ htmlcov/
 # Build
 *.whl
 *.tar.gz
+
+# VCS-generated version (setuptools-scm)
+src/ionworks_schema/_version.py
