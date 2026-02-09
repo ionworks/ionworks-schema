@@ -1,6 +1,9 @@
 """ionworks_schema - Pydantic schemas for ionworkspipeline."""
 
-__version__ = "0.14.1.dev13+g4d666e083.d20260201"
+try:
+    from ionworks_schema._version import __version__
+except ModuleNotFoundError:
+    __version__ = "0.0.0"
 
 from . import (
     calculations,
