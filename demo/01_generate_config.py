@@ -69,11 +69,13 @@ def main():
         "Number of reactions in positive electrode": msmr_init[
             "Number of reactions in positive electrode"
         ],
-        "Positive electrode capacity [A.h]": iws.ParameterConfigSchema(
+        "Positive electrode capacity [A.h]": iws.Parameter(
+            name="Positive electrode capacity [A.h]",
             initial_value=Q_max,
             bounds=(0.98 * Q_max, 1.2 * Q_max),
         ),
-        "Positive electrode lower excess capacity [A.h]": iws.ParameterConfigSchema(
+        "Positive electrode lower excess capacity [A.h]": iws.Parameter(
+            name="Positive electrode lower excess capacity [A.h]",
             initial_value=0.01 * Q_max,
             bounds=(0, 0.05 * Q_max),
         ),
@@ -82,24 +84,24 @@ def main():
     # Add species parameters
     for k, v in msmr_init.items():
         if "occupancy fraction" in k:
-            params[k] = iws.ParameterConfigSchema(initial_value=v, bounds=(0.01, 0.99))
+            params[k] = iws.Parameter(name=k, initial_value=v, bounds=(0.01, 0.99))
         elif "standard potential" in k:
-            params[k] = iws.ParameterConfigSchema(
-                initial_value=v, bounds=(max(3.0, v - 0.5), min(5.0, v + 0.5))
+            params[k] = iws.Parameter(
+                name=k,
+                initial_value=v,
+                bounds=(max(3.0, v - 0.5), min(5.0, v + 0.5)),
             )
         elif "ideality factor" in k:
-            params[k] = iws.ParameterConfigSchema(initial_value=v, bounds=(0.1, 20.0))
+            params[k] = iws.Parameter(name=k, initial_value=v, bounds=(0.1, 20.0))
 
-    n_fit = len(
-        [p for p in params.values() if isinstance(p, iws.ParameterConfigSchema)]
-    )
+    n_fit = len([p for p in params.values() if isinstance(p, iws.Parameter)])
     print(f"\nParameters to fit: {n_fit}")
 
     # =========================================================================
     # Step 4: Build pipeline using schemas
     # =========================================================================
-    objective = iws.MSMRHalfCellConfigSchema(
-        data=data.to_config(),  # Serialize data to config format
+    objective = iws.MSMRHalfCell(
+        data_input=data.to_config(),  # Serialize data to config format
         options={
             "dUdQ cutoff": dUdQ_cutoff,
             "model": {
@@ -110,13 +112,13 @@ def main():
         },
     )
 
-    data_fit = iws.DataFitConfigSchema(
+    data_fit = iws.DataFit(
         objectives={"ocp": objective},
         parameters=params,
         multistarts=50,
     )
 
-    pipeline = iws.PipelineConfigSchema(components={"cathode_ocp_fit": data_fit})
+    pipeline = iws.Pipeline(elements={"cathode_ocp_fit": data_fit})
 
     # =========================================================================
     # Step 5: Export to JSON
