@@ -6,6 +6,7 @@ from .parameter_estimators import (
     PSO,
     SNES,
     XNES,
+    DifferentialEvolution,
     DummyOptimizer,
     DummySampler,
     GridSearch,
@@ -27,6 +28,7 @@ from .parameter_estimators import (
 
 __all__ = [
     "CMAES",
+    "DifferentialEvolution",
     "DummyOptimizer",
     "DummySampler",
     "GridSearch",

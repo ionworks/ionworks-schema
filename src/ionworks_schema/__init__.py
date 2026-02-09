@@ -24,6 +24,7 @@ from .base import BaseSchema, Pipeline
 from .data_fit import DataFit
 from .direct_entries import DirectEntry
 from .library import Library, Material
+from .objective_functions import Prior
 from .objectives import MSMRFullCell, MSMRHalfCell
 from .parameter import Parameter
 
@@ -37,6 +38,7 @@ __all__ = [
     "DataFit",
     "MSMRHalfCell",
     "MSMRFullCell",
+    "Prior",
     "calculations",
     "core",
     "data_fit",

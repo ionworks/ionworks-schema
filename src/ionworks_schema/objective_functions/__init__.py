@@ -15,6 +15,7 @@ from .objective_functions import (
     MultiCost,
     ObjectiveFunction,
 )
+from .regularizers import Prior
 
 __all__ = [
     "ChiSquare",
@@ -28,6 +29,7 @@ __all__ = [
     "Max",
     "MultiCost",
     "ObjectiveFunction",
+    "Prior",
     "RMSE",
     "SSE",
 ]
