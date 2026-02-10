@@ -23,6 +23,16 @@ class CMAES(BaseSchema):
     pass
 
 
+class DifferentialEvolution(BaseSchema):
+    """Differential Evolution (DE) with SHADE adaptive control.
+
+    Uses success-history based adaptive F/CR with current-to-pbest/1 mutation by default.
+    Convenience wrapper around ``Pints(method="DifferentialEvolution")``.
+    See `Pints` class for full parameter documentation."""
+
+    pass
+
+
 class DummyOptimizer(BaseSchema):
     """Alias for PointEstimate optimizer."""
 
@@ -458,7 +468,8 @@ class ScipyBasinhopping(BaseSchema):
 
 
 class ScipyDifferentialEvolution(BaseSchema):
-    """Global stochastic optimizer using differential evolution with parallel evaluation.
+    """
+    Global stochastic optimizer using differential evolution with parallel evaluation.
 
     Differential evolution is a robust global optimization algorithm that evolves a
     population of candidate solutions across generations. It excels at handling
@@ -497,17 +508,21 @@ class ScipyDifferentialEvolution(BaseSchema):
 
     Examples
     --------
-    >>> # Basic usage with parallel evaluation
-    >>> optimizer = ScipyDifferentialEvolution(workers=-1, maxiter=500)
-    >>> optimizer.set_objective(cost_function)
+    Basic usage (single worker for doctests):
+
+    >>> optimizer = ScipyDifferentialEvolution(maxiter=50, seed=42)
+    >>> optimizer.set_objective(sphere)
     >>> optimizer.set_bounds((lower, upper))
-    >>> result = optimizer.run(x0)  # x0 is ignored
-    >>>
-    >>> # With callback for progress monitoring
-    >>> def log_progress(x_list, cost_list):
-    ...     print(f"Best cost: {cost_list[0]:.6f}")
-    >>> optimizer.set_evaluation_callback(log_progress)
-    >>> result = optimizer.run(x0)"""
+    >>> result = optimizer.run(x0)
+    >>> result.fun < 1e-3
+    True
+
+    Integration with DataFit:
+
+    >>> optimizer = ScipyDifferentialEvolution(maxiter=500)
+    >>> isinstance(optimizer, ScipyDifferentialEvolution)
+    True
+    """
 
     pass
 
