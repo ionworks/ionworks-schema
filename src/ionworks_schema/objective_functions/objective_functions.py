@@ -124,6 +124,37 @@ class ErrorFunction(BaseSchema):
         )
 
 
+class GaussianLogLikelihood(BaseSchema):
+    """
+    Gaussian negative log-likelihood cost function.
+
+    Computes the Gaussian NLL:
+
+        NLL = 0.5 * Σ_vars [ N_i * log(2π * σ_i²) + Σ_j (y_ij - ŷ_ij)² / σ_i² ]
+
+    This enables MLE with noise estimation, MAP estimation, and Bayesian
+    posterior sampling (MCMC).
+
+    Parameters
+    ----------
+    sigma : dict[str, float | str]
+        Mapping of variable names to noise standard deviations (σ). Values
+        can be:
+        - A float: fixed known noise standard deviation
+        - A string: name of a fitting parameter to be optimised (looked up
+          from the current inputs at evaluation time via ``set_current_inputs``)
+    nan_values : str or float, optional
+        How to deal with NaN values in model output. Same options as
+        ``ErrorFunction``: "mean" (default), "min", or a float replacement.
+    """
+
+    sigma: Any = Field(...)
+    nan_values: Any | None = Field(default=None)
+
+    def __init__(self, sigma, nan_values=None):
+        super().__init__(sigma=sigma, nan_values=nan_values)
+
+
 class MAE(BaseSchema):
     """Mean-absolute-error cost function.
 
