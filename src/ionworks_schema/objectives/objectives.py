@@ -227,15 +227,18 @@ class CycleAgeing(BaseSchema):
                 The experiment to use for the simulation. No default is provided, but
                 this option is required (an experiment must be passed in).
             * objective variables: list of strings
-                The variables to fit. No default is provided, but this option is required
-                (a list of variables must be passed in). The variables must be a subset of
-                the keys in the data, and must be returned by the function passed to the
-                `cycle_variables_fn` option.
-            * cycle_variables_fn: callable
-                A function that takes a simulation and list of cycle numbers and returns
-                a dataframe of cycle variables. Default is :func:`get_standard_summary_variables`.
+                The variables to fit. No default is provided, but this option is
+                required (a list of variables must be passed in). The variables must
+                be a subset of the keys in the data.
+            * metrics: dict of str to BaseMetric
+                A dictionary mapping variable names to metric objects that extract
+                values from the simulation solution. Each metric should be created
+                with ``.by_cycle()`` to evaluate across cycles. The cycles will be
+                set automatically from the data. Default metrics are provided for
+                "LLI [%]", "LAM_ne [%]", and "LAM_pe [%]".
             * simulation_kwargs: dict
-                Keyword arguments to pass to the simulation (:class:`iwp.Simulation`). Default is None.
+                Keyword arguments to pass to the simulation (:class:`iwp.Simulation`).
+                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
