@@ -15,6 +15,7 @@ from . import (
     objectives,
     parameter,
     parameter_estimators,
+    solvers,
     stats,
     transforms,
 )
@@ -49,6 +50,7 @@ __all__ = [
     "objectives",
     "parameter",
     "parameter_estimators",
+    "solvers",
     "stats",
     "transforms",
 ]
