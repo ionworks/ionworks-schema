@@ -11,6 +11,7 @@ from . import (
     base,
     calculations,
     core,
+    costs,
     data_fit,
     direct_entries,
     library,
@@ -19,6 +20,7 @@ from . import (
     objectives,
     parameter,
     parameter_estimators,
+    priors,
     stats,
     transforms,
 )
@@ -29,24 +31,29 @@ from .data_fit import ArrayDataFit, DataFit
 from .library import Library, Material
 from .parameter import Parameter
 
-# Objectives are only via iws.objectives.X (like iwp.objectives.MSMRHalfCell).
-# Top-level access to objective classes is deprecated and will warn.
-_TOP_LEVEL_DEPRECATED_OBJECTIVES = {
-    "MSMRHalfCell",
-    "MSMRFullCell",
+# Alias so iws.optimizers matches iwp.optimizers (pipeline has top-level optimizers)
+optimizers = parameter_estimators
+
+
+# Deprecated top-level names: use the submodule path instead (e.g. iws.objectives.MSMRHalfCell).
+# Map name -> (submodule, submodule_path for message)
+_TOP_LEVEL_DEPRECATED = {
+    "MSMRHalfCell": (objectives, "objectives"),
+    "MSMRFullCell": (objectives, "objectives"),
+    "DirectEntry": (direct_entries, "direct_entries"),
 }
 
 
 def __getattr__(name: str):
-    if name in _TOP_LEVEL_DEPRECATED_OBJECTIVES:
+    if name in _TOP_LEVEL_DEPRECATED:
+        submodule, submodule_path = _TOP_LEVEL_DEPRECATED[name]
         warnings.warn(
             f"Top-level access to {name!r} is deprecated and will be removed in a future version. "
-            f"Use the objectives submodule instead: iws.objectives.{name} or "
-            f"from ionworks_schema.objectives import {name}.",
+            f"Use iws.{submodule_path}.{name} or from ionworks_schema.{submodule_path} import {name}.",
             category=DeprecationWarning,
             stacklevel=2,
         )
-        return getattr(objectives, name)
+        return getattr(submodule, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
@@ -60,6 +67,7 @@ __all__ = [
     "Material",
     "base",
     "calculations",
+    "costs",
     "core",
     "data_fit",
     "direct_entries",
@@ -67,8 +75,10 @@ __all__ = [
     "models",
     "objective_functions",
     "objectives",
+    "optimizers",
     "parameter",
     "parameter_estimators",
+    "priors",
     "stats",
     "transforms",
 ]

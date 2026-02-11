@@ -68,6 +68,7 @@ A pipeline is a top-level **`Pipeline`** with a dictionary of named **elements**
 | **Calculation** | `ionworks_schema.calculations` | Run calculations (e.g. OCP, diffusivity, geometry). See submodule for available classes. |
 | **Objectives** | `MSMRHalfCell`, `MSMRFullCell`, `CurrentDriven`, `CycleAgeing`, `CalendarAgeing`, `EIS`, `Pulse`, `Resistance`, `ElectrodeBalancing`, `OCPHalfCell`, and others | Used inside `DataFit.objectives` to define what to fit. Import from `ionworks_schema.objectives` (e.g. `iws.objectives.MSMRHalfCell`). |
 | **Parameters** | `Parameter` | `name`, `initial_value`, `bounds` (and optional prior, etc.). Used in `DataFit.parameters`; dict key is the parameter name. |
+| **Priors** | `Prior` | Used in `DataFit.priors`. Import from `ionworks_schema.priors` (e.g. `iws.priors.Prior`). |
 | **Library** | `Material`, `Library` | Built-in material library for initial parameter values. |
 
 ## Material library
