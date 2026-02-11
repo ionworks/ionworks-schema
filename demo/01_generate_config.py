@@ -100,7 +100,7 @@ def main():
     # =========================================================================
     # Step 4: Build pipeline using schemas
     # =========================================================================
-    objective = iws.MSMRHalfCell(
+    objective = iws.objectives.MSMRHalfCell(
         data_input=data.to_config(),  # Serialize data to config format
         options={
             "dUdQ cutoff": dUdQ_cutoff,
