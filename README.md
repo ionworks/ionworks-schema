@@ -19,33 +19,28 @@ pip install ionworks_schema
 Build a pipeline configuration with schema classes, export to JSON, and submit with the Ionworks API client:
 
 ```python
-from ionworks_schema import (
-    Pipeline,
-    DataFit,
-    MSMRHalfCell,
-    Parameter,
-)
+import ionworks_schema as iws
 import json
 
 # Define a parameter to fit (name, initial_value, bounds)
-parameter = Parameter(
+parameter = iws.Parameter(
     name="Positive electrode capacity [A.h]",
     initial_value=1.0,
     bounds=(0.5, 2.0),
 )
 
-# Objective: MSMR half-cell fit; data can be "db:<measurement_id>" for uploaded data
-objective = MSMRHalfCell(
+# Objective: MSMR half-cell fit; data can be "db:<measurement_id>" for uploaded data (use objectives submodule)
+objective = iws.objectives.MSMRHalfCell(
     data_input="db:your-measurement-id",
     options={"model": {"electrode": "positive"}},
 )
 
-data_fit = DataFit(
+data_fit = iws.DataFit(
     objectives={"ocp": objective},
     parameters={"Positive electrode capacity [A.h]": parameter},
 )
 
-pipeline = Pipeline(elements={"fit": data_fit})
+pipeline = iws.Pipeline(elements={"fit": data_fit})
 
 # Export to JSON for API submission
 config = pipeline.to_config()
@@ -71,8 +66,9 @@ A pipeline is a top-level **`Pipeline`** with a dictionary of named **elements**
 | **Entry** | `DirectEntry` | Supply fixed parameter values (no fitting or calculation). |
 | **Data fit** | `DataFit`, `ArrayDataFit` | Fit model parameters to data; contain `objectives` and `parameters`. |
 | **Calculation** | `ionworks_schema.calculations` | Run calculations (e.g. OCP, diffusivity, geometry). See submodule for available classes. |
-| **Objectives** | `MSMRHalfCell`, `MSMRFullCell`, `CurrentDriven`, `CycleAgeing`, `CalendarAgeing`, `EIS`, `Pulse`, `Resistance`, `ElectrodeBalancing`, `OCPHalfCell`, and others | Used inside `DataFit.objectives` to define what to fit. Import from `ionworks_schema` or `ionworks_schema.objectives`. |
+| **Objectives** | `MSMRHalfCell`, `MSMRFullCell`, `CurrentDriven`, `CycleAgeing`, `CalendarAgeing`, `EIS`, `Pulse`, `Resistance`, `ElectrodeBalancing`, `OCPHalfCell`, and others | Used inside `DataFit.objectives` to define what to fit. Import from `ionworks_schema.objectives` (e.g. `iws.objectives.MSMRHalfCell`). |
 | **Parameters** | `Parameter` | `name`, `initial_value`, `bounds` (and optional prior, etc.). Used in `DataFit.parameters`; dict key is the parameter name. |
+| **Priors** | `Prior` | Used in `DataFit.priors`. Import from `ionworks_schema.priors` (e.g. `iws.priors.Prior`). |
 | **Library** | `Material`, `Library` | Built-in material library for initial parameter values. |
 
 ## Material library
@@ -80,13 +76,13 @@ A pipeline is a top-level **`Pipeline`** with a dictionary of named **elements**
 Access built-in materials with validated parameter values for use as initial values or entries:
 
 ```python
-from ionworks_schema import Material, Library
+import ionworks_schema as iws
 
 # List available materials
-materials = Library.list_materials()
+materials = iws.Library.list_materials()
 
 # Get a specific material (e.g. NMC - Verbrugge 2017)
-material = Material.from_library("NMC - Verbrugge 2017")
+material = iws.Material.from_library("NMC - Verbrugge 2017")
 print(material.parameter_values)
 ```
 
