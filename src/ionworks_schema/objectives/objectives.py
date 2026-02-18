@@ -172,6 +172,20 @@ class CalendarAgeing(SimulationObjective):
                 "LAM_ne [%]", "LAM_pe [%]". Default is ["LLI [%]"].
             * simulation_kwargs: dict
                 Keyword arguments to pass to the simulation (:class:`iwp.Simulation`). Default is None.
+            * Initial SOC: float, optional
+                Initial state of charge (0 to 1). Applied before the simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
+                Default is None.
+            * Initial temperature [K]: float, optional
+                Initial and ambient temperature in Kelvin. Applied before the
+                simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
+                Default is None.
+            * Initial voltage [V]: float, optional
+                Initial voltage in Volts. Cannot be used together with
+                ``Initial SOC``. Applied via
+                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
+                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
@@ -181,7 +195,8 @@ class CalendarAgeing(SimulationObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    """
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -248,6 +263,20 @@ class CurrentDriven(SimulationObjective):
                 `interpolant_rtol` based on the current data. Default is False.
             * solver_max_save_points: int, optional
                 Maximum number of points to save in the solver. Disabled by default.
+            * Initial SOC: float, optional
+                Initial state of charge (0 to 1). Applied before the simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
+                Default is None.
+            * Initial temperature [K]: float, optional
+                Initial and ambient temperature in Kelvin. Applied before the
+                simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
+                Default is None.
+            * Initial voltage [V]: float, optional
+                Initial voltage in Volts. Cannot be used together with
+                ``Initial SOC``. Applied via
+                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
+                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
@@ -277,7 +306,8 @@ class CurrentDriven(SimulationObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    """
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -334,6 +364,20 @@ class CycleAgeing(SimulationObjective):
             * simulation_kwargs: dict
                 Keyword arguments to pass to the simulation (:class:`iwp.Simulation`).
                 Default is None.
+            * Initial SOC: float, optional
+                Initial state of charge (0 to 1). Applied before the simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
+                Default is None.
+            * Initial temperature [K]: float, optional
+                Initial and ambient temperature in Kelvin. Applied before the
+                simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
+                Default is None.
+            * Initial voltage [V]: float, optional
+                Initial voltage in Volts. Cannot be used together with
+                ``Initial SOC``. Applied via
+                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
+                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
@@ -343,7 +387,8 @@ class CycleAgeing(SimulationObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    """
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -401,8 +446,23 @@ class DesignObjective(BaseObjective):
         A dictionary of `Action` wrapped `Metrics` to use for this objective and its parameters.
     constraints : dict[str, BaseAction], optional
         A dictionary of equality and inequality constraints to apply to the objective.
-    options : dict
+    options : dict, optional
         A dictionary of options to pass to the data fit.
+
+            * Initial SOC: float, optional
+                Initial state of charge (0 to 1). Applied before the objective via
+                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
+                Default is None.
+            * Initial temperature [K]: float, optional
+                Initial and ambient temperature in Kelvin. Applied before the
+                objective via
+                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
+                Default is None.
+            * Initial voltage [V]: float, optional
+                Initial voltage in Volts. Cannot be used together with
+                ``Initial SOC``. Applied via
+                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
+                Default is None.
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
@@ -417,7 +477,8 @@ class DesignObjective(BaseObjective):
         The cost function to use for the objective. If not provided, the default cost
         function will be used.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    """
 
     actions: Any = Field(...)
     constraints: Any | None = Field(default=None)
@@ -931,12 +992,26 @@ class Pulse(SimulationObjective):
                 `interpolant_rtol` based on the current data. Default is False.
             * solver_max_save_points: int, optional
                 Maximum number of points to save in the solver. Disabled by default.
+            * Initial SOC: float, optional
+                Initial state of charge (0 to 1). Applied before the simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
+                Default is None.
+            * Initial temperature [K]: float, optional
+                Initial and ambient temperature in Kelvin. Applied before the
+                simulation via
+                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
+                Default is None.
+            * Initial voltage [V]: float, optional
+                Initial voltage in Volts. Cannot be used together with
+                ``Initial SOC``. Applied via
+                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
+                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.The following default
-        custom parameters are used:
+        A dictionary of parameters to use within this objective only. The following
+        default custom parameters are used:
 
         For all models:
 
