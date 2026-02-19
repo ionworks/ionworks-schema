@@ -6,24 +6,19 @@ from .direct_entries import (
     PiecewiseInterpolation1D,
     PiecewiseInterpolation2D,
 )
-from .registry import FUNCTION_ENTRY_NAMES
+from .function_schemas import (
+    FUNCTION_SCHEMAS,
+    DirectEntryFunctionSchema,
+)
 
-
-def __getattr__(name: str):
-    """Return a wrapper that builds NamedDirectEntry(name, **kwargs) for registered function names."""
-    if name in FUNCTION_ENTRY_NAMES:
-
-        def _wrapper(**kwargs):
-            return NamedDirectEntry(name=name, **kwargs)
-
-        return _wrapper
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
+# Expose each function schema under its snake_case name (e.g. landesfeind_electrolyte)
+globals().update(FUNCTION_SCHEMAS)
 
 __all__ = [
     "DirectEntry",
-    "FUNCTION_ENTRY_NAMES",
+    "DirectEntryFunctionSchema",
     "NamedDirectEntry",
     "PiecewiseInterpolation1D",
     "PiecewiseInterpolation2D",
+    *FUNCTION_SCHEMAS.keys(),
 ]

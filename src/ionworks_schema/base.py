@@ -17,7 +17,9 @@ def _get_element_type(comp: Any) -> str | None:
         return "entry"
     if cls_name == "NamedDirectEntry":
         return "entry"
-    if cls_name == "Calculation":
+    if "DirectEntryFunctionSchema" in (c.__name__ for c in cls.__mro__):
+        return "entry"
+    if cls_name == "Calculation" or "Calculation" in (c.__name__ for c in cls.__mro__):
         return "calculation"
     # Unknown type (e.g. dict for raw config) — don't set element_type; pass through
     return None
