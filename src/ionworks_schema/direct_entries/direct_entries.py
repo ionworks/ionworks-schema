@@ -56,7 +56,9 @@ class InitialStateOfCharge(BaseSchema):
         Initial state of charge as a percentage (0 to 100).
     """
 
-    value: Any = Field(..., description="Initial state of charge as a percentage (0 to 100)")
+    value: Any = Field(
+        ..., description="Initial state of charge as a percentage (0 to 100)"
+    )
 
     def __init__(self, value):
         super().__init__(value=value)

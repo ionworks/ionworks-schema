@@ -1118,7 +1118,6 @@ class Resistance(FittingObjective):
         )
 
 
-
 class SimulationObjective(FittingObjective):
     """A pipeline element that constructs an objective function used to fit a model to
     data. SimulationObjective is a subclass of FittingObjective intended for use with
