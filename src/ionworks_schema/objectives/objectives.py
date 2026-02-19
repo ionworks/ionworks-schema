@@ -450,6 +450,10 @@ class DesignObjective(BaseObjective):
         function will be used.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None.
     """
 
     actions: Any = Field(...)
@@ -462,6 +466,7 @@ class DesignObjective(BaseObjective):
     output_variables_full: Any | None = Field(default=None)
     save_at_cycles: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -475,6 +480,7 @@ class DesignObjective(BaseObjective):
         output_variables_full=None,
         save_at_cycles=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             actions=actions,
@@ -487,6 +493,7 @@ class DesignObjective(BaseObjective):
             output_variables_full=output_variables_full,
             save_at_cycles=save_at_cycles,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
