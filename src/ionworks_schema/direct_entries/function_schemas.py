@@ -38,7 +38,9 @@ class ArrheniusButlerVolmerExchangeCurrentDensity(DirectEntryFunctionSchema):
     __function_name__ = "arrhenius_butler_volmer_exchange_current_density"
 
     electrode: str = Field(..., description="Electrode: 'negative' or 'positive'")
-    direction: str = Field(default="", description="'lithiation', 'delithiation', or ''")
+    direction: str = Field(
+        default="", description="'lithiation', 'delithiation', or ''"
+    )
     phase: str = Field(default="", description="'primary', 'secondary', or ''")
 
 
@@ -64,7 +66,9 @@ class AverageOcp(DirectEntryFunctionSchema):
     __function_name__ = "average_ocp"
 
     electrode: str = Field(..., description="Electrode: 'negative' or 'positive'")
-    phase: str | None = Field(default=None, description="Phase for composite electrodes")
+    phase: str | None = Field(
+        default=None, description="Phase for composite electrodes"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -144,7 +148,9 @@ class Bruggeman(DirectEntryFunctionSchema):
     __function_name__ = "bruggeman"
 
     electrode: float = Field(default=0, description="Bruggeman exponent for electrode")
-    electrolyte: float = Field(default=1.5, description="Bruggeman exponent for electrolyte")
+    electrolyte: float = Field(
+        default=1.5, description="Bruggeman exponent for electrolyte"
+    )
 
 
 class SpmDefaults(DirectEntryFunctionSchema):
