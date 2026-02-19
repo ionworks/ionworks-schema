@@ -7,31 +7,6 @@ from pydantic import Field
 from ..base import BaseSchema
 
 
-class NamedDirectEntry(BaseSchema):
-    """
-    Schema for a direct entry that references a function in iwp.direct_entries by name.
-
-    When serialized via to_config(), produces the format consumed by parse_entry:
-    {"name": <name>, **kwargs}. Pipeline.to_config() adds element_type: "entry".
-    Only names that exist in iwp.direct_entries will work at pipeline parse time.
-    """
-
-    name: str = Field(..., description="Name of function in iwp.direct_entries to call")
-
-    def __init__(self, name: str, **kwargs: Any):
-        super().__init__(name=name, **kwargs)
-
-    def to_config(self) -> dict:
-        """Convert to parser-compatible format (name + kwargs). Omits default/empty kwargs for minimal config."""
-        data = self.model_dump(exclude_none=True)
-        out: dict[str, Any] = {"name": data["name"]}
-        for k, v in data.items():
-            if k == "name" or v == "":
-                continue
-            out[k] = v
-        return out
-
-
 class DirectEntry(BaseSchema):
     """
     Schema for DirectEntry - directly provide parameters without calculation or fitting.

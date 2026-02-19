@@ -8,20 +8,17 @@ from pydantic import BaseModel, ConfigDict
 def _get_element_type(comp: Any) -> str | None:
     """Determine element_type for a pipeline component. Returns None for raw configs (e.g. dicts) so they pass through unchanged."""
     cls = type(comp)
-    cls_name = cls.__name__
-    if cls_name in ("DataFit", "ArrayDataFit"):
+    mro_names = {c.__name__ for c in cls.__mro__}
+    if "DirectEntry" in mro_names:
+        return "entry"
+    if "DirectEntryFunctionSchema" in mro_names:
+        return "entry"
+    if cls.__name__ in ("DataFit", "ArrayDataFit"):
         return "data_fit"
-    if cls_name == "Validation":
+    if cls.__name__ == "Validation":
         return "validation"
-    if cls_name == "DirectEntry" or "DirectEntry" in (c.__name__ for c in cls.__mro__):
-        return "entry"
-    if cls_name == "NamedDirectEntry":
-        return "entry"
-    if "DirectEntryFunctionSchema" in (c.__name__ for c in cls.__mro__):
-        return "entry"
-    if cls_name == "Calculation" or "Calculation" in (c.__name__ for c in cls.__mro__):
+    if "Calculation" in mro_names:
         return "calculation"
-    # Unknown type (e.g. dict for raw config) — don't set element_type; pass through
     return None
 
 

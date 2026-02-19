@@ -2,7 +2,6 @@
 
 from .direct_entries import (
     DirectEntry,
-    NamedDirectEntry,
     PiecewiseInterpolation1D,
     PiecewiseInterpolation2D,
 )
@@ -17,7 +16,6 @@ globals().update(FUNCTION_SCHEMAS)
 __all__ = [
     "DirectEntry",
     "DirectEntryFunctionSchema",
-    "NamedDirectEntry",
     "PiecewiseInterpolation1D",
     "PiecewiseInterpolation2D",
     *FUNCTION_SCHEMAS.keys(),

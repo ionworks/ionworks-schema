@@ -214,5 +214,4 @@ class ArrayDataFit(DataFit):
 
     objectives: Any = Field(...)
 
-    def __init__(self, objectives, **kwargs):
-        super().__init__(objectives=objectives, **kwargs)
+    pass

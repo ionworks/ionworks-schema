@@ -151,33 +151,7 @@ class SimulationObjective(FittingObjective):
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective."""
 
-    data_input: Any = Field(...)
-    options: Any | None = Field(default=None)
-    callbacks: Any | None = Field(default=None)
-    custom_parameters: Any | None = Field(default=None)
-    cost: Any | None = Field(default=None)
-    constraints: Any | None = Field(default=None)
-    penalties: Any | None = Field(default=None)
-
-    def __init__(
-        self,
-        data_input,
-        options=None,
-        callbacks=None,
-        custom_parameters=None,
-        cost=None,
-        constraints=None,
-        penalties=None,
-    ):
-        super().__init__(
-            data_input=data_input,
-            options=options,
-            callbacks=callbacks,
-            custom_parameters=custom_parameters,
-            cost=cost,
-            constraints=constraints,
-            penalties=penalties,
-        )
+    pass
 
 
 class CalendarAgeing(SimulationObjective):
