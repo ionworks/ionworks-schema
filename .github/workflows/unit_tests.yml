@@ -28,12 +28,12 @@ jobs:
       - name: Run pytest
         if: matrix.os != 'ubuntu-latest' || matrix.python-version != '3.12'
         run: |
-          uv run --python ${{ matrix.python-version }} pytest tests
+          uv run --python ${{ matrix.python-version }} --extra dev pytest tests
 
       - name: Run pytest with coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         run: |
-          uv run --python ${{ matrix.python-version }} pytest --cov=ionworks_schema --cov-report=xml tests
+          uv run --python ${{ matrix.python-version }} --extra dev pytest --cov=ionworks_schema --cov-report=xml tests
 
       - name: Upload coverage report
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
