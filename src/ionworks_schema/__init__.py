@@ -23,13 +23,15 @@ from . import (
     priors,
     stats,
     transforms,
+    validation,
 )
 
-# Top-level (match ionworkspipeline: iwp.Pipeline, iwp.DataFit, iwp.Parameter, iwp.Library, iwp.Material)
+# Top-level (match ionworkspipeline: iwp.Pipeline, iwp.DataFit, iwp.Parameter, iwp.Library, iwp.Material, iwp.Validation)
 from .base import BaseSchema, Pipeline
 from .data_fit import ArrayDataFit, DataFit
 from .library import Library, Material
 from .parameter import Parameter
+from .validation import Validation
 
 # Alias so iws.optimizers matches iwp.optimizers (pipeline has top-level optimizers)
 optimizers = parameter_estimators
@@ -58,13 +60,14 @@ def __getattr__(name: str):
 
 
 __all__ = [
-    "BaseSchema",
-    "Pipeline",
-    "DataFit",
     "ArrayDataFit",
-    "Parameter",
+    "BaseSchema",
+    "DataFit",
     "Library",
     "Material",
+    "Parameter",
+    "Pipeline",
+    "Validation",
     "base",
     "calculations",
     "costs",
@@ -81,4 +84,5 @@ __all__ = [
     "priors",
     "stats",
     "transforms",
+    "validation",
 ]

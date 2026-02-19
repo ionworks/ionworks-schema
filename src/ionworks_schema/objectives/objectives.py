@@ -42,6 +42,7 @@ class BaseObjective(BaseSchema):
 
     def __init__(
         self,
+        data_input=None,
         options=None,
         callbacks=None,
         custom_parameters=None,
@@ -50,6 +51,7 @@ class BaseObjective(BaseSchema):
         penalties=None,
     ):
         super().__init__(
+            data_input=data_input,
             options=options,
             callbacks=callbacks,
             custom_parameters=custom_parameters,
@@ -59,7 +61,100 @@ class BaseObjective(BaseSchema):
         )
 
 
-class CalendarAgeing(BaseSchema):
+class FittingObjective(BaseObjective):
+    """A pipeline element that constructs an objective function used to fit a model to
+    data.
+
+    Parameters
+    ----------
+    data_input : str or dict
+        The data to use for the fit. Can be a string giving the path to the data, or a
+        dictionary with keys "data" and "metadata". "data" should be a DataFrame that
+        supplies the raw data, and "metadata" should be a dictionary that supplies
+        metadata about the data.
+    options : dict, optional
+        A dictionary of options to pass to the data fit.
+    callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
+        A class with methods that get called at various points during the datafit
+        process
+    custom_parameters : dict of str: float or callable, optional
+        A dictionary of parameters to use within this objective only. Values in
+        this dictionary will override any values for the simulation within this
+        objective but will not be passed on as results of the `DataFit` object.
+        If a callable is provided, it must take the form of a function that takes in
+        a dictionary of parameters and the `data_input` "data" dictionary and returns
+        the value of the parameter (which can be a float or function, as in PyBaMM).
+    cost : :class:`ionworkspipeline.costs.ObjectiveFunction` or str, optional
+        The cost function to use for the objective. If not provided, the default cost
+        function will be used.
+    constraints : list[Constraint], optional
+        A list of equality and inequality constraints to apply to the objective.
+    penalties : list[Penalty], optional
+        A list of penalties to apply to the objective."""
+
+    data_input: Any = Field(...)
+    options: Any | None = Field(default=None)
+    callbacks: Any | None = Field(default=None)
+    custom_parameters: Any | None = Field(default=None)
+    cost: Any | None = Field(default=None)
+    constraints: Any | None = Field(default=None)
+    penalties: Any | None = Field(default=None)
+
+    def __init__(
+        self,
+        data_input,
+        options=None,
+        callbacks=None,
+        custom_parameters=None,
+        cost=None,
+        constraints=None,
+        penalties=None,
+    ):
+        # Pass data_input through so Pydantic receives it for validation (schema only; pipeline BaseObjective does not take it)
+        super().__init__(
+            data_input=data_input,
+            options=options,
+            callbacks=callbacks,
+            custom_parameters=custom_parameters,
+            cost=cost,
+            constraints=constraints,
+            penalties=penalties,
+        )
+
+
+class SimulationObjective(FittingObjective):
+    """A pipeline element that constructs an objective function used to fit a model to
+    data. SimulationObjective is a subclass of FittingObjective intended for use with
+    objectives that run a pybamm simulation.
+
+    Parameters
+    ----------
+    data_input : str or dict
+        The data to use for the fit. Can be a string giving the path to the data, or a
+        dictionary with keys "data" and "metadata". "data" should be a DataFrame that
+        supplies the raw data, and "metadata" should be a dictionary that supplies
+        metadata about the data.
+    options : dict, optional
+        A dictionary of options to pass to the data fit.
+    callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
+        A class with methods that get called at various points during the datafit
+        process
+    custom_parameters : dict of str: float or callable, optional
+        A dictionary of parameters to use within this objective only. Values in
+        this dictionary will override any values for the simulation within this
+        objective but will not be passed on as results of the `DataFit` object.
+        If a callable is provided, it must take the form of a function that takes in
+        a dictionary of parameters and the `data_input` "data" dictionary and returns
+        the value of the parameter (which can be a float or function, as in PyBaMM).
+    constraints : list[Constraint], optional
+        A list of equality and inequality constraints to apply to the objective.
+    penalties : list[Penalty], optional
+        A list of penalties to apply to the objective."""
+
+    pass
+
+
+class CalendarAgeing(SimulationObjective):
     """Objective for fitting LLI and/or LAM to calendar ageing data for a full cell.
 
     Parameters
@@ -114,7 +209,7 @@ class CalendarAgeing(BaseSchema):
         )
 
 
-class CurrentDriven(BaseSchema):
+class CurrentDriven(SimulationObjective):
     """Objective for generic current-driven experiment.
 
     Parameters
@@ -210,7 +305,7 @@ class CurrentDriven(BaseSchema):
         )
 
 
-class CycleAgeing(BaseSchema):
+class CycleAgeing(SimulationObjective):
     """Objective for fitting summary variables to cycling data.
 
     Parameters
@@ -276,7 +371,7 @@ class CycleAgeing(BaseSchema):
         )
 
 
-class DesignObjective(BaseSchema):
+class DesignObjective(BaseObjective):
     """A pipeline element that constructs a design objective class.
 
     This class implements a robust failure handling system specifically designed
@@ -362,11 +457,11 @@ class DesignObjective(BaseSchema):
         )
 
 
-class EIS(BaseSchema):
+class EIS(FittingObjective):
     """Objective for electrochemical impedance spectroscopy (EIS) data. Simulates the
     model response at the given frequencies and compares the impedance to the data.
 
-    This objectives uses the `pybammeis` package to simulate the EIS experiment in the
+    This objective uses the ``pybamm-eis`` package to simulate the EIS experiment in the
     frequency domain.
 
 
@@ -420,7 +515,7 @@ class EIS(BaseSchema):
         )
 
 
-class ElectrodeBalancing(BaseSchema):
+class ElectrodeBalancing(FittingObjective):
     """Objective for electrode balancing (finding electrode capacities and
     stoichiometries that give the best fit to the full cell data).
 
@@ -473,7 +568,7 @@ class ElectrodeBalancing(BaseSchema):
         )
 
 
-class ElectrodeBalancingHalfCell(BaseSchema):
+class ElectrodeBalancingHalfCell(FittingObjective):
     """Objective for finding the starting capacity and total capacity of an electrode,
     given an known OCV function. For example, this can be used to fit the starting
     capacity and total capacity for a GITT experiment to align with a previously
@@ -530,67 +625,7 @@ class ElectrodeBalancingHalfCell(BaseSchema):
         )
 
 
-class FittingObjective(BaseSchema):
-    """A pipeline element that constructs an objective function used to fit a model to
-    data.
-
-    Parameters
-    ----------
-    data_input : str or dict
-        The data to use for the fit. Can be a string giving the path to the data, or a
-        dictionary with keys "data" and "metadata". "data" should be a DataFrame that
-        supplies the raw data, and "metadata" should be a dictionary that supplies
-        metadata about the data.
-    options : dict, optional
-        A dictionary of options to pass to the data fit.
-    callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
-        A class with methods that get called at various points during the datafit
-        process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
-    cost : :class:`ionworkspipeline.costs.ObjectiveFunction` or str, optional
-        The cost function to use for the objective. If not provided, the default cost
-        function will be used.
-    constraints : list[Constraint], optional
-        A list of equality and inequality constraints to apply to the objective.
-    penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
-
-    data_input: Any = Field(...)
-    options: Any | None = Field(default=None)
-    callbacks: Any | None = Field(default=None)
-    custom_parameters: Any | None = Field(default=None)
-    cost: Any | None = Field(default=None)
-    constraints: Any | None = Field(default=None)
-    penalties: Any | None = Field(default=None)
-
-    def __init__(
-        self,
-        data_input,
-        options=None,
-        callbacks=None,
-        custom_parameters=None,
-        cost=None,
-        constraints=None,
-        penalties=None,
-    ):
-        super().__init__(
-            data_input=data_input,
-            options=options,
-            callbacks=callbacks,
-            custom_parameters=custom_parameters,
-            cost=cost,
-            constraints=constraints,
-            penalties=penalties,
-        )
-
-
-class MSMRFullCell(BaseSchema):
+class MSMRFullCell(FittingObjective):
     """Objective for the open-circuit potential (OCP) of a full cell, using the
     MSMR model.
 
@@ -667,7 +702,7 @@ class MSMRFullCell(BaseSchema):
         )
 
 
-class MSMRHalfCell(BaseSchema):
+class MSMRHalfCell(FittingObjective):
     """Objective for the open-circuit potential (OCP) of a half-cell, using the
     MSMR model.
 
@@ -760,7 +795,7 @@ class MSMRHalfCell(BaseSchema):
         )
 
 
-class OCPHalfCell(BaseSchema):
+class OCPHalfCell(FittingObjective):
     """Objective for the open-circuit potential (OCP) of a half-cell.
 
     Parameters
@@ -842,13 +877,13 @@ class OCPHalfCell(BaseSchema):
         )
 
 
-class Objective(BaseSchema):
+class Objective(FittingObjective):
     """Deprecated alias for `FittingObjective`."""
 
     pass
 
 
-class Pulse(BaseSchema):
+class Pulse(SimulationObjective):
     """Objective for pulse experiments (e.g. GITT, HPPC, ICI). By default, the objective
     compares the model voltage to the data voltage. However, it can also compute other
     variables, such as overpotentials, resistances, and ICI features, and these can be
@@ -961,7 +996,7 @@ class Pulse(BaseSchema):
         )
 
 
-class Resistance(BaseSchema):
+class Resistance(FittingObjective):
     """Objective for fitting the resistance.
 
     Parameters
@@ -1008,64 +1043,6 @@ class Resistance(BaseSchema):
             options=options,
             callbacks=callbacks,
             custom_parameters=custom_parameters,
-            constraints=constraints,
-            penalties=penalties,
-        )
-
-
-class SimulationObjective(BaseSchema):
-    """A pipeline element that constructs an objective function used to fit a model to
-    data. SimulationObjective is a subclass of Objective that intended for use with
-    objectives that run a pybamm simulation.
-
-    Parameters
-    ----------
-    data_input : str or dict
-        The data to use for the fit. Can be a string giving the path to the data, or a
-        dictionary with keys "data" and "metadata". "data" should be a DataFrame that
-        supplies the raw data, and "metadata" should be a dictionary that supplies
-        metadata about the data.
-    options : dict, optional
-        A dictionary of options to pass to the data fit.
-    callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
-        A class with methods that get called at various points during the datafit
-        process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
-    constraints : list[Constraint], optional
-        A list of equality and inequality constraints to apply to the objective.
-    penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
-
-    data_input: Any = Field(...)
-    options: Any | None = Field(default=None)
-    callbacks: Any | None = Field(default=None)
-    custom_parameters: Any | None = Field(default=None)
-    cost: Any | None = Field(default=None)
-    constraints: Any | None = Field(default=None)
-    penalties: Any | None = Field(default=None)
-
-    def __init__(
-        self,
-        data_input,
-        options=None,
-        callbacks=None,
-        custom_parameters=None,
-        cost=None,
-        constraints=None,
-        penalties=None,
-    ):
-        super().__init__(
-            data_input=data_input,
-            options=options,
-            callbacks=callbacks,
-            custom_parameters=custom_parameters,
-            cost=cost,
             constraints=constraints,
             penalties=penalties,
         )

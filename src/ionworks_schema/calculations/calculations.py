@@ -7,7 +7,38 @@ from pydantic import Field
 from ..base import BaseSchema
 
 
-class AreaToSquareWidthHeight(BaseSchema):
+class Calculation(BaseSchema):
+    """Base class for calculations that derive new parameters from existing ones.
+
+    Calculations transform input parameters through algebraic or numerical methods
+    to produce output parameters. Common uses include computing geometric properties,
+    stoichiometry windows, and material concentrations.
+
+    Parameters
+    ----------
+    source : str, optional
+        Reference or description of the calculation method (e.g., paper citation,
+        algorithm description). Optional for subclasses that do not use it.
+
+    Examples
+    --------
+    Create a custom calculation:
+
+    >>> class CustomCalculation(iwp.Calculation):
+    ...     def __init__(self):
+    ...         super().__init__(source="Custom method")
+    ...
+    ...     def run(self, parameter_values: iwp.ParameterValues) -> iwp.ParameterValues:
+    ...         result = parameter_values["Input [m]"] * 2
+    ...         return iwp.ParameterValues({"Output [m]": result})"""
+
+    source: Any = Field(default=None)
+
+    def __init__(self, source=None, **kwargs):
+        super().__init__(source=source, **kwargs)
+
+
+class AreaToSquareWidthHeight(Calculation):
     """Calculate electrode height and width from area assuming square geometry.
 
     Computes electrode dimensions as sqrt(area) for both height and width,
@@ -26,7 +57,7 @@ class AreaToSquareWidthHeight(BaseSchema):
     pass
 
 
-class ArrheniusDiffusivityFromMSMRData(BaseSchema):
+class ArrheniusDiffusivityFromMSMRData(Calculation):
     """Calculate the diffusivity from OCP data as
 
     .. math::
@@ -89,7 +120,7 @@ class ArrheniusDiffusivityFromMSMRData(BaseSchema):
         )
 
 
-class ArrheniusDiffusivityFromMSMRFunction(BaseSchema):
+class ArrheniusDiffusivityFromMSMRFunction(Calculation):
     """Calculate the diffusivity from an OCP function as
 
     .. math::
@@ -150,7 +181,7 @@ class ArrheniusDiffusivityFromMSMRFunction(BaseSchema):
         )
 
 
-class ArrheniusLogLinear(BaseSchema):
+class ArrheniusLogLinear(Calculation):
     """Schema for ArrheniusLogLinear."""
 
     data: Any = Field(...)
@@ -165,7 +196,7 @@ class ArrheniusLogLinear(BaseSchema):
         )
 
 
-class AverageMSMRParameters(BaseSchema):
+class AverageMSMRParameters(Calculation):
     """Averages the MSMR species parameters over the delithiation and lithiation directions
     for the given electrode. The parameters are separated by direction using the
     `iwp.data_fits.objectives.ocp_msmr_util.U0_prefix`, `iwp.data_fits.objectives.ocp_msmr_util.w_prefix`,
@@ -192,38 +223,7 @@ class AverageMSMRParameters(BaseSchema):
         super().__init__(electrode=electrode, options=options)
 
 
-class Calculation(BaseSchema):
-    """Base class for calculations that derive new parameters from existing ones.
-
-    Calculations transform input parameters through algebraic or numerical methods
-    to produce output parameters. Common uses include computing geometric properties,
-    stoichiometry windows, and material concentrations.
-
-    Parameters
-    ----------
-    source : str
-        Reference or description of the calculation method (e.g., paper citation,
-        algorithm description).
-
-    Examples
-    --------
-    Create a custom calculation:
-
-    >>> class CustomCalculation(iwp.Calculation):
-    ...     def __init__(self):
-    ...         super().__init__(source="Custom method")
-    ...
-    ...     def run(self, parameter_values: iwp.ParameterValues) -> iwp.ParameterValues:
-    ...         result = parameter_values["Input [m]"] * 2
-    ...         return iwp.ParameterValues({"Output [m]": result})"""
-
-    source: Any = Field(...)
-
-    def __init__(self, source):
-        super().__init__(source=source)
-
-
-class CellMass(BaseSchema):
+class CellMass(Calculation):
     """Calculate the total cell mass in kilograms.
 
     This method uses the provided parameter set to calculate the mass of different
@@ -247,7 +247,7 @@ class CellMass(BaseSchema):
         super().__init__(model_options=model_options)
 
 
-class CyclableLithium(BaseSchema):
+class CyclableLithium(Calculation):
     """Calculation of amount of cyclable lithium capacity, either based on previously
     calculated electrode capacities and initial stoichiometries ("electrode capacities"
     option), or based on the initial positive electrode capacity and some formation loss
@@ -284,20 +284,20 @@ class CyclableLithium(BaseSchema):
         super().__init__(method=method, options=options)
 
 
-class DensityFromVolumeAndMass(BaseSchema):
+class DensityFromVolumeAndMass(Calculation):
     """Calculate the density from the mass and volume."""
 
     pass
 
 
-class DiameterToSquareWidthHeight(BaseSchema):
+class DiameterToSquareWidthHeight(Calculation):
     """Sets the electrode height and width to be the square root of the electrode
     cross-sectional area, calculated from the diameter (for a coin cell)."""
 
     pass
 
 
-class DiffusivityDataInterpolant(BaseSchema):
+class DiffusivityDataInterpolant(Calculation):
     """A pipeline element that creates an interpolant for the diffusivity from an array
     of diffusivity data. This interpolant can be used to calculate the diffusivity at
     any point within the range of the data.
@@ -352,7 +352,7 @@ class DiffusivityDataInterpolant(BaseSchema):
         )
 
 
-class DiffusivityFromMSMRData(BaseSchema):
+class DiffusivityFromMSMRData(Calculation):
     """Calculate the diffusivity from OCP data as
 
     .. math::
@@ -414,7 +414,7 @@ class DiffusivityFromMSMRData(BaseSchema):
         )
 
 
-class DiffusivityFromMSMRFunction(BaseSchema):
+class DiffusivityFromMSMRFunction(Calculation):
     """Calculate the diffusivity from an OCP function as
 
     .. math::
@@ -475,7 +475,7 @@ class DiffusivityFromMSMRFunction(BaseSchema):
         )
 
 
-class DiffusivityFromPulse(BaseSchema):
+class DiffusivityFromPulse(Calculation):
     """A pipeline element that calculates the diffusion coefficient from pulse data by
     directly using the voltage data from the pulse, without the need for fitting a
     model. This method uses eqn 26 from Wang et al. [1]_ to calculate the diffusion
@@ -538,7 +538,7 @@ class DiffusivityFromPulse(BaseSchema):
         )
 
 
-class ElectrodeCapacity(BaseSchema):
+class ElectrodeCapacity(Calculation):
     """A pipeline element that calculates variables related to the capacity. Automatically
     determines the method and unknown.
 
@@ -595,7 +595,7 @@ class ElectrodeCapacity(BaseSchema):
         )
 
 
-class ElectrodeSOH(BaseSchema):
+class ElectrodeSOH(Calculation):
     """Calculate electrode stoichiometry windows from capacity using electrode SOH algorithm.
 
     Determines minimum and maximum stoichiometries in both electrodes from OCP curves,
@@ -639,7 +639,7 @@ class ElectrodeSOH(BaseSchema):
         super().__init__(options=options)
 
 
-class ElectrodeSOHHalfCell(BaseSchema):
+class ElectrodeSOHHalfCell(Calculation):
     """Calculate minimum and maximum electrode stoichiometries for a half-cell using the
     electrode-specific SOH algorithm.
 
@@ -665,7 +665,7 @@ class ElectrodeSOHHalfCell(BaseSchema):
         super().__init__(electrode=electrode, options=options)
 
 
-class ElectrodeVolumeFractionFromLoading(BaseSchema):
+class ElectrodeVolumeFractionFromLoading(Calculation):
     """Calculate the volume fraction of active material in the electrodes from the loading and maximum concentration or from the coating mass and crystal density.
 
     Parameters
@@ -682,7 +682,7 @@ class ElectrodeVolumeFractionFromLoading(BaseSchema):
         super().__init__(electrode=electrode, method=method)
 
 
-class ElectrodeVolumeFractionFromPorosity(BaseSchema):
+class ElectrodeVolumeFractionFromPorosity(Calculation):
     """Calculate the volume fraction of active material in the electrodes from the
     porosity and the active volume fraction of solid.
 
@@ -698,7 +698,7 @@ class ElectrodeVolumeFractionFromPorosity(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class EntropicChangeDataInterpolant(BaseSchema):
+class EntropicChangeDataInterpolant(Calculation):
     """Create an interpolant for the open-circuit entropic change from data.
 
     Parameters
@@ -733,7 +733,7 @@ class EntropicChangeDataInterpolant(BaseSchema):
         super().__init__(electrode=electrode, data=data, options=options)
 
 
-class EntropicChangeFromMSMRFunction(BaseSchema):
+class EntropicChangeFromMSMRFunction(Calculation):
     """Create an interpolant for the open-circuit entropic change from MSMR parameters.
 
     Parameters
@@ -767,7 +767,7 @@ class EntropicChangeFromMSMRFunction(BaseSchema):
         )
 
 
-class HalfCellNominalCapacity(BaseSchema):
+class HalfCellNominalCapacity(Calculation):
     """Set nominal cell capacity and current function equal to electrode capacity.
 
     For half-cell models, the cell capacity is determined by the working electrode
@@ -793,7 +793,7 @@ class HalfCellNominalCapacity(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class InitialConcentrationFromInitialStoichiometryHalfCell(BaseSchema):
+class InitialConcentrationFromInitialStoichiometryHalfCell(Calculation):
     """Calculate the initial concentration in the given electrode from the initial
     stoichiometry and maximum concentration.
 
@@ -817,7 +817,7 @@ class InitialConcentrationFromInitialStoichiometryHalfCell(BaseSchema):
         super().__init__(electrode=electrode, options=options)
 
 
-class InitialSOC(BaseSchema):
+class InitialSOC(Calculation):
     """Calculate initial electrode concentrations from target SOC.
 
     Converts a state-of-charge value to electrode stoichiometries and absolute
@@ -847,7 +847,7 @@ class InitialSOC(BaseSchema):
         super().__init__(soc=soc)
 
 
-class InitialSOCHalfCell(BaseSchema):
+class InitialSOCHalfCell(Calculation):
     """Calculate initial electrode concentration from target SOC for half-cell.
 
     Converts SOC to stoichiometry and absolute concentration for the working
@@ -890,7 +890,7 @@ class InitialSOCHalfCell(BaseSchema):
         super().__init__(electrode=electrode, soc=soc, options=options)
 
 
-class InitialSOCfromMaximumStoichiometry(BaseSchema):
+class InitialSOCfromMaximumStoichiometry(Calculation):
     """Calculate the initial concentration in the negative and positive electrodes from
     the initial SOC and stoichiometry windows in each electrode.
 
@@ -911,7 +911,7 @@ class InitialSOCfromMaximumStoichiometry(BaseSchema):
         super().__init__(options=options)
 
 
-class InitialStoichiometryFromVoltageHalfCell(BaseSchema):
+class InitialStoichiometryFromVoltageHalfCell(Calculation):
     """Calculate the initial stoichiometry in the given electrode from the initial
     voltage (i.e. find the stoichiometry that gives the correct voltage).
 
@@ -942,7 +942,7 @@ class InitialStoichiometryFromVoltageHalfCell(BaseSchema):
         super().__init__(electrode=electrode, options=options)
 
 
-class InitialStoichiometryFromVoltageMSMRHalfCell(BaseSchema):
+class InitialStoichiometryFromVoltageMSMRHalfCell(Calculation):
     """Calculate the initial stoichiometry in the given electrode from the initial
     voltage (i.e. find the stoichiometry that gives the correct voltage) using the
     MSMR framework.
@@ -959,7 +959,7 @@ class InitialStoichiometryFromVoltageMSMRHalfCell(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class InitialVoltageFromConcentration(BaseSchema):
+class InitialVoltageFromConcentration(Calculation):
     """Calculate initial voltage from target concentration using OCP inversion.
 
     Finds the voltage that produces a target electrode concentration by
@@ -988,7 +988,7 @@ class InitialVoltageFromConcentration(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class JellyRollThermalDimensions(BaseSchema):
+class JellyRollThermalDimensions(Calculation):
     """Calculate thermal properties of cylindrical jelly roll cell.
 
     Computes volume and surface area from jelly roll radius and height,
@@ -1008,14 +1008,14 @@ class JellyRollThermalDimensions(BaseSchema):
     pass
 
 
-class LumpedHeatCapacityAndDensity(BaseSchema):
+class LumpedHeatCapacityAndDensity(Calculation):
     """Sets the specific heat capacity and density for each cell component to the lumped
     (cell-level) values."""
 
     pass
 
 
-class MSMRElectrodeSOHHalfCell(BaseSchema):
+class MSMRElectrodeSOHHalfCell(Calculation):
     """Calculate minimum and maximum electrode stoichiometries for a half-cell by
     evaluating the extent of lithiation at the minimum and maximum OCV.
 
@@ -1032,7 +1032,7 @@ class MSMRElectrodeSOHHalfCell(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class MSMRFullCellCapacities(BaseSchema):
+class MSMRFullCellCapacities(Calculation):
     """A pipeline element that calculates variables related to the capacity from the MSMR
     full-cell balance.
 
@@ -1053,7 +1053,7 @@ class MSMRFullCellCapacities(BaseSchema):
         super().__init__(data=data, method=method)
 
 
-class MSMRFunction(BaseSchema):
+class MSMRFunction(Calculation):
     """Specifies the MSMR function for the open-circuit potential for the given electrode.
 
     Parameters
@@ -1073,7 +1073,7 @@ class MSMRFunction(BaseSchema):
         super().__init__(electrode=electrode, direction=direction, phase=phase)
 
 
-class OCPDataInterpolant(BaseSchema):
+class OCPDataInterpolant(Calculation):
     """Create an interpolant for the open-circuit voltage (OCP) from data.
 
     Parameters
@@ -1109,7 +1109,7 @@ class OCPDataInterpolant(BaseSchema):
         super().__init__(electrode=electrode, data=data, options=options)
 
 
-class OCPDataInterpolantMSMRExtrapolation(BaseSchema):
+class OCPDataInterpolantMSMRExtrapolation(Calculation):
     """Create an interpolant for the open-circuit voltage (OCP) from data and use MSMR
     parameters to extrapolate outside the data range and to convert capacity to
     stoichiometry.
@@ -1163,7 +1163,7 @@ class OCPDataInterpolantMSMRExtrapolation(BaseSchema):
         )
 
 
-class OCPMSMRInterpolant(BaseSchema):
+class OCPMSMRInterpolant(Calculation):
     """Create an interpolant for the open-circuit voltage (OCP) from MSMR parameters.
 
     Parameters
@@ -1201,7 +1201,7 @@ class OCPMSMRInterpolant(BaseSchema):
         )
 
 
-class OpenCircuitLimits(BaseSchema):
+class OpenCircuitLimits(Calculation):
     """Set OCV limits equal to voltage cutoffs for SOC calculations.
 
     Copies voltage cutoff parameters to OCV limit parameters, establishing the
@@ -1221,7 +1221,7 @@ class OpenCircuitLimits(BaseSchema):
     pass
 
 
-class PorosityFromElectrodeVolumeFraction(BaseSchema):
+class PorosityFromElectrodeVolumeFraction(Calculation):
     """Calculate the porosity from the active material volume fraction.
 
     Parameters
@@ -1236,7 +1236,7 @@ class PorosityFromElectrodeVolumeFraction(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class PouchCellThermalDimensions(BaseSchema):
+class PouchCellThermalDimensions(Calculation):
     """Calculate thermal properties of rectangular pouch cell.
 
     Computes volume and surface area from pouch dimensions, assuming
@@ -1257,7 +1257,7 @@ class PouchCellThermalDimensions(BaseSchema):
     pass
 
 
-class SlopesToKnots(BaseSchema):
+class SlopesToKnots(Calculation):
     """Converts slopes and initial value to knot values for piecewise linear interpolation.
 
     This calculation takes as input:
@@ -1314,7 +1314,7 @@ class SlopesToKnots(BaseSchema):
         )
 
 
-class SlopesToKnots2D(BaseSchema):
+class SlopesToKnots2D(Calculation):
     """Converts slopes and initial value to knot values for 2D piecewise linear interpolation.
 
     This calculation takes as input:
@@ -1386,13 +1386,13 @@ class SlopesToKnots2D(BaseSchema):
         )
 
 
-class SpecificHeatCapacity(BaseSchema):
+class SpecificHeatCapacity(Calculation):
     """Calculate the specific heat capacity from the lumped heat capacity and cell mass"""
 
     pass
 
 
-class StoichiometryAtMinimumSOC(BaseSchema):
+class StoichiometryAtMinimumSOC(Calculation):
     """Calculate the stoichiometry at the minimum SOC based on the stoichiometry at the
     maximum SOC, the electrode capacities, and the useable capacity.
 
@@ -1408,7 +1408,7 @@ class StoichiometryAtMinimumSOC(BaseSchema):
         super().__init__(electrode=electrode)
 
 
-class StoichiometryLimitsFromCapacity(BaseSchema):
+class StoichiometryLimitsFromCapacity(Calculation):
     """Calculate the minimum and maximum stoichiometries for each electrode in a full-cell
     based on the electrode total capacity, lower and upper excess capacities.
 
@@ -1433,7 +1433,7 @@ class StoichiometryLimitsFromCapacity(BaseSchema):
         super().__init__(options=options)
 
 
-class SurfaceAreaToVolumeRatio(BaseSchema):
+class SurfaceAreaToVolumeRatio(Calculation):
     """Calculate the surface area to volume ratio for the electrodes from the active
     material volume fraction and particle radius, assuming spherical particles.
 
