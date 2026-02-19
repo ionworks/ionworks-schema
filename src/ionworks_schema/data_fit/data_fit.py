@@ -7,32 +7,6 @@ from pydantic import Field, model_validator
 from ..base import BaseSchema
 
 
-class ArrayDataFit(BaseSchema):
-    """A pipeline element that fits a model to data for multiple independent variable
-    values. The data for each independent variable value is fitted separately.
-    The independent variable values should be given as the keys of the `objectives`
-    dictionary. The value of each key should be a :class:`ionworkspipeline.data_fits.objectives.BaseObjective`
-    object. This objective will be used to fit the data for the corresponding
-    independent variable value.
-
-    The user-supplied objectives should assign the independent variable value to the
-    `custom_parameters` attribute of the objective as appropriate. This class simply
-    calls a separate :class:`ionworkspipeline.DataFit` for each provided objective. It does not
-    pass the independent variable value to the objective, so the user must ensure that
-    the objective is set up to use the independent variable value correctly.
-
-    For example, this can be used to fit a model to data at multiple temperatures, or
-    fit each pulse of a GITT experiment separately, with post-processing to extract
-    functional relationships between parameters and the independent variable.
-
-    The rest of the parameters are the same as for :class:`ionworkspipeline.DataFit`."""
-
-    objectives: Any = Field(...)
-
-    def __init__(self, objectives):
-        super().__init__(objectives=objectives)
-
-
 class DataFit(BaseSchema):
     """A pipeline element that fits a model to data.
 
@@ -216,3 +190,29 @@ class DataFit(BaseSchema):
         if parameters and priors:
             raise ValueError("Only one of 'parameters' or 'priors' can be specified")
         return self
+
+
+class ArrayDataFit(DataFit):
+    """A pipeline element that fits a model to data for multiple independent variable
+    values. The data for each independent variable value is fitted separately.
+    The independent variable values should be given as the keys of the `objectives`
+    dictionary. The value of each key should be a :class:`ionworkspipeline.data_fits.objectives.BaseObjective`
+    object. This objective will be used to fit the data for the corresponding
+    independent variable value.
+
+    The user-supplied objectives should assign the independent variable value to the
+    `custom_parameters` attribute of the objective as appropriate. This class simply
+    calls a separate :class:`ionworkspipeline.DataFit` for each provided objective. It does not
+    pass the independent variable value to the objective, so the user must ensure that
+    the objective is set up to use the independent variable value correctly.
+
+    For example, this can be used to fit a model to data at multiple temperatures, or
+    fit each pulse of a GITT experiment separately, with post-processing to extract
+    functional relationships between parameters and the independent variable.
+
+    The rest of the parameters are the same as for :class:`ionworkspipeline.DataFit`."""
+
+    objectives: Any = Field(...)
+
+    def __init__(self, objectives, **kwargs):
+        super().__init__(objectives=objectives, **kwargs)
