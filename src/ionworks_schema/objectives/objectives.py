@@ -31,7 +31,11 @@ class BaseObjective(BaseSchema):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None."""
 
     options: Any | None = Field(default=None)
     callbacks: Any | None = Field(default=None)
@@ -39,6 +43,7 @@ class BaseObjective(BaseSchema):
     cost: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -49,6 +54,7 @@ class BaseObjective(BaseSchema):
         cost=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -58,6 +64,7 @@ class BaseObjective(BaseSchema):
             cost=cost,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -172,20 +179,6 @@ class CalendarAgeing(SimulationObjective):
                 "LAM_ne [%]", "LAM_pe [%]". Default is ["LLI [%]"].
             * simulation_kwargs: dict
                 Keyword arguments to pass to the simulation (:class:`iwp.Simulation`). Default is None.
-            * Initial SOC: float, optional
-                Initial state of charge (0 to 1). Applied before the simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
-                Default is None.
-            * Initial temperature [K]: float, optional
-                Initial and ambient temperature in Kelvin. Applied before the
-                simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
-                Default is None.
-            * Initial voltage [V]: float, optional
-                Initial voltage in Volts. Cannot be used together with
-                ``Initial SOC``. Applied via
-                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
-                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
@@ -196,6 +189,10 @@ class CalendarAgeing(SimulationObjective):
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None.
     """
 
     data_input: Any = Field(...)
@@ -204,6 +201,7 @@ class CalendarAgeing(SimulationObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -213,6 +211,7 @@ class CalendarAgeing(SimulationObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -221,6 +220,7 @@ class CalendarAgeing(SimulationObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -263,20 +263,6 @@ class CurrentDriven(SimulationObjective):
                 `interpolant_rtol` based on the current data. Default is False.
             * solver_max_save_points: int, optional
                 Maximum number of points to save in the solver. Disabled by default.
-            * Initial SOC: float, optional
-                Initial state of charge (0 to 1). Applied before the simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
-                Default is None.
-            * Initial temperature [K]: float, optional
-                Initial and ambient temperature in Kelvin. Applied before the
-                simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
-                Default is None.
-            * Initial voltage [V]: float, optional
-                Initial voltage in Volts. Cannot be used together with
-                ``Initial SOC``. Applied via
-                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
-                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
@@ -307,6 +293,10 @@ class CurrentDriven(SimulationObjective):
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None.
     """
 
     data_input: Any = Field(...)
@@ -315,6 +305,7 @@ class CurrentDriven(SimulationObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -324,6 +315,7 @@ class CurrentDriven(SimulationObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -332,6 +324,7 @@ class CurrentDriven(SimulationObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -364,20 +357,6 @@ class CycleAgeing(SimulationObjective):
             * simulation_kwargs: dict
                 Keyword arguments to pass to the simulation (:class:`iwp.Simulation`).
                 Default is None.
-            * Initial SOC: float, optional
-                Initial state of charge (0 to 1). Applied before the simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
-                Default is None.
-            * Initial temperature [K]: float, optional
-                Initial and ambient temperature in Kelvin. Applied before the
-                simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
-                Default is None.
-            * Initial voltage [V]: float, optional
-                Initial voltage in Volts. Cannot be used together with
-                ``Initial SOC``. Applied via
-                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
-                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
@@ -388,6 +367,10 @@ class CycleAgeing(SimulationObjective):
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None.
     """
 
     data_input: Any = Field(...)
@@ -396,6 +379,7 @@ class CycleAgeing(SimulationObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -405,6 +389,7 @@ class CycleAgeing(SimulationObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -413,6 +398,7 @@ class CycleAgeing(SimulationObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -449,20 +435,6 @@ class DesignObjective(BaseObjective):
     options : dict, optional
         A dictionary of options to pass to the data fit.
 
-            * Initial SOC: float, optional
-                Initial state of charge (0 to 1). Applied before the objective via
-                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
-                Default is None.
-            * Initial temperature [K]: float, optional
-                Initial and ambient temperature in Kelvin. Applied before the
-                objective via
-                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
-                Default is None.
-            * Initial voltage [V]: float, optional
-                Initial voltage in Volts. Cannot be used together with
-                ``Initial SOC``. Applied via
-                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
-                Default is None.
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
@@ -548,7 +520,11 @@ class EIS(FittingObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -556,6 +532,7 @@ class EIS(FittingObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -565,6 +542,7 @@ class EIS(FittingObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -573,6 +551,7 @@ class EIS(FittingObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -996,11 +975,6 @@ class Pulse(SimulationObjective):
                 Initial state of charge (0 to 1). Applied before the simulation via
                 :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
                 Default is None.
-            * Initial temperature [K]: float, optional
-                Initial and ambient temperature in Kelvin. Applied before the
-                simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialTemperature`.
-                Default is None.
             * Initial voltage [V]: float, optional
                 Initial voltage in Volts. Cannot be used together with
                 ``Initial SOC``. Applied via
@@ -1043,7 +1017,11 @@ class Pulse(SimulationObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -1051,6 +1029,7 @@ class Pulse(SimulationObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -1060,6 +1039,7 @@ class Pulse(SimulationObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -1068,6 +1048,7 @@ class Pulse(SimulationObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -1095,7 +1076,11 @@ class Resistance(FittingObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -1103,6 +1088,7 @@ class Resistance(FittingObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -1112,6 +1098,7 @@ class Resistance(FittingObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -1120,4 +1107,40 @@ class Resistance(FittingObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
+
+
+
+class SimulationObjective(FittingObjective):
+    """A pipeline element that constructs an objective function used to fit a model to
+    data. SimulationObjective is a subclass of FittingObjective intended for use with
+    objectives that run a pybamm simulation.
+
+    Parameters
+    ----------
+    data_input : str or dict
+        The data to use for the fit. Can be a string giving the path to the data, or a
+        dictionary with keys "data" and "metadata". "data" should be a DataFrame that
+        supplies the raw data, and "metadata" should be a dictionary that supplies
+        metadata about the data.
+    options : dict, optional
+        A dictionary of options to pass to the data fit.
+    callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
+        A class with methods that get called at various points during the datafit
+        process
+    custom_parameters : dict of str: float or callable, optional
+        A dictionary of parameters to use within this objective only. Values in
+        this dictionary will override any values for the simulation within this
+        objective but will not be passed on as results of the `DataFit` object.
+        If a callable is provided, it must take the form of a function that takes in
+        a dictionary of parameters and the `data_input` "data" dictionary and returns
+        the value of the parameter (which can be a float or function, as in PyBaMM).
+    constraints : list[Constraint], optional
+        A list of equality and inequality constraints to apply to the objective.
+    penalties : list[Penalty], optional
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None."""
