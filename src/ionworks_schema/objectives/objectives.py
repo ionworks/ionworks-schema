@@ -97,7 +97,11 @@ class FittingObjective(BaseObjective):
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Unlike ``custom_parameters``, these are static values rather
+        than callables. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -106,6 +110,7 @@ class FittingObjective(BaseObjective):
     cost: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -116,6 +121,7 @@ class FittingObjective(BaseObjective):
         cost=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         # Pass data_input through so Pydantic receives it for validation (schema only; pipeline BaseObjective does not take it)
         super().__init__(
@@ -126,6 +132,7 @@ class FittingObjective(BaseObjective):
             cost=cost,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
