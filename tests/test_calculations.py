@@ -1,12 +1,9 @@
 """Tests for ionworks_schema calculations."""
 
-import pytest
-
-import ionworks_schema as iws
 from ionworks_schema.calculations import (
-    Calculation,
     AreaToSquareWidthHeight,
     ArrheniusDiffusivityFromMSMRData,
+    Calculation,
 )
 
 

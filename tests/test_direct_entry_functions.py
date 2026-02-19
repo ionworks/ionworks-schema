@@ -1,12 +1,10 @@
 """Tests for direct entry function-style API and DirectEntryFunctionSchema classes."""
 
-import pytest
-
 import ionworks_schema as iws
 from ionworks_schema.direct_entries import FUNCTION_SCHEMAS
 from ionworks_schema.direct_entries.function_schemas import (
-    AverageOcp,
     ArrheniusButlerVolmerExchangeCurrentDensity,
+    AverageOcp,
     Bruggeman,
     ConstantElectrolyte,
     FromJson,
@@ -165,5 +163,7 @@ def test_pipeline_with_function_entry_roundtrip():
     assert cfg["elements"]["D"]["name"] == "arrhenius_particle_diffusivity"
     assert cfg["elements"]["D"]["electrode"] == "positive"
     # empty direction/phase omitted
-    assert "direction" not in cfg["elements"]["D"] or not cfg["elements"]["D"]["direction"]
+    assert (
+        "direction" not in cfg["elements"]["D"] or not cfg["elements"]["D"]["direction"]
+    )
     assert "phase" not in cfg["elements"]["D"] or not cfg["elements"]["D"]["phase"]

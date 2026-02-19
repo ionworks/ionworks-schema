@@ -1,7 +1,5 @@
 """Minimal tests for ionworks_schema: import, instantiate, and to_config()."""
 
-import pytest
-
 import ionworks_schema as iws
 
 

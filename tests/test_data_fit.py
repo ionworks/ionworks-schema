@@ -1,9 +1,7 @@
 """Tests for ionworks_schema data_fit (DataFit, ArrayDataFit)."""
 
 import pytest
-
-import ionworks_schema as iws
-from ionworks_schema.data_fit import DataFit, ArrayDataFit
+from ionworks_schema.data_fit import ArrayDataFit, DataFit
 from ionworks_schema.objectives import FittingObjective
 
 

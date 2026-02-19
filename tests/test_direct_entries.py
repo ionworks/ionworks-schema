@@ -1,8 +1,5 @@
 """Tests for ionworks_schema direct entries (DirectEntry, PiecewiseInterpolation)."""
 
-import pytest
-
-import ionworks_schema as iws
 from ionworks_schema.direct_entries import (
     DirectEntry,
     PiecewiseInterpolation1D,

@@ -1,8 +1,6 @@
 """Tests for ionworks_schema objectives."""
 
 import pytest
-
-import ionworks_schema as iws
 from ionworks_schema.objectives import (
     BaseObjective,
     FittingObjective,
