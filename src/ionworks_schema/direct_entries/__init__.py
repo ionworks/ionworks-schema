@@ -2,6 +2,9 @@
 
 from .direct_entries import (
     DirectEntry,
+    InitialStateOfCharge,
+    InitialTemperature,
+    InitialVoltage,
     PiecewiseInterpolation1D,
     PiecewiseInterpolation2D,
 )
@@ -16,6 +19,9 @@ globals().update(FUNCTION_SCHEMAS)
 __all__ = [
     "DirectEntry",
     "DirectEntryFunctionSchema",
+    "InitialStateOfCharge",
+    "InitialTemperature",
+    "InitialVoltage",
     "PiecewiseInterpolation1D",
     "PiecewiseInterpolation2D",
     *FUNCTION_SCHEMAS.keys(),

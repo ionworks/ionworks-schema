@@ -46,6 +46,80 @@ class DirectEntry(BaseSchema):
         }
 
 
+class InitialStateOfCharge(BaseSchema):
+    """
+    Set the initial state of charge.
+
+    Parameters
+    ----------
+    value : float
+        Initial state of charge as a percentage (0 to 100).
+    """
+
+    value: Any = Field(
+        ..., description="Initial state of charge as a percentage (0 to 100)"
+    )
+
+    def __init__(self, value):
+        super().__init__(value=value)
+
+    def to_config(self) -> dict:
+        """Convert to parser-compatible format."""
+        return {
+            "element_type": "entry",
+            "values": {"Initial SOC [%]": self.value},
+        }
+
+
+class InitialTemperature(BaseSchema):
+    """
+    Set the initial and ambient temperatures.
+
+    Parameters
+    ----------
+    value : float
+        Initial and ambient temperatures in Kelvin.
+    """
+
+    value: Any = Field(..., description="Initial and ambient temperatures in Kelvin")
+
+    def __init__(self, value):
+        super().__init__(value=value)
+
+    def to_config(self) -> dict:
+        """Convert to parser-compatible format."""
+        return {
+            "element_type": "entry",
+            "values": {
+                "Ambient temperature [K]": self.value,
+                "Initial temperature [K]": self.value,
+            },
+        }
+
+
+class InitialVoltage(BaseSchema):
+    """
+    Set the initial voltage.
+
+    Parameters
+    ----------
+    value : float
+        Initial voltage in volts.
+    """
+
+    value: Any = Field(..., description="Initial voltage in volts")
+
+    def __init__(self, value):
+        super().__init__(value=value)
+
+    def to_config(self) -> dict:
+        """Convert to parser-compatible format."""
+        return {
+            "element_type": "entry",
+            "values": {"Initial voltage [V]": self.value},
+        }
+
+
 class PiecewiseInterpolation1D(DirectEntry):
     """
     Schema for piecewise linear interpolation (1D) direct entry.
