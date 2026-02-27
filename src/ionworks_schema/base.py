@@ -7,16 +7,21 @@ from pybamm.expression_tree.operations.serialise import Serialise
 from pydantic import BaseModel, ConfigDict
 
 
-def _get_element_type(cls_name: str) -> str:
-    """Determine element_type for a pipeline component based on class name."""
-    if cls_name in ("DataFit", "ArrayDataFit"):
-        return "data_fit"
-    if cls_name == "Validation":
-        return "validation"
-    if cls_name == "DirectEntry":
+def _get_element_type(comp: Any) -> str | None:
+    """Determine element_type for a pipeline component. Returns None for raw configs (e.g. dicts) so they pass through unchanged."""
+    cls = type(comp)
+    mro_names = {c.__name__ for c in cls.__mro__}
+    if "DirectEntry" in mro_names:
         return "entry"
-    # Calculations and other pipeline elements
-    return "calculation"
+    if "DirectEntryFunctionSchema" in mro_names:
+        return "entry"
+    if cls.__name__ in ("DataFit", "ArrayDataFit"):
+        return "data_fit"
+    if cls.__name__ == "Validation":
+        return "validation"
+    if "Calculation" in mro_names:
+        return "calculation"
+    return None
 
 
 def _serialize_pybamm_model(model):
@@ -70,6 +75,18 @@ def _serialize_value(value):
         return value.model_dump(exclude_none=True)
     if isinstance(value, pybamm.BaseModel):
         return _serialize_pybamm_model(value)
+    # pandas or polars DataFrame -> dict of lists for serialization
+    if hasattr(value, "to_dict") and hasattr(value, "columns"):
+        cls = type(value)
+        mod = getattr(cls, "__module__", "")
+        if "pandas" in mod:
+            return value.to_dict(orient="list")
+        if "polars" in mod:
+            return value.to_dict(as_series=False)
+        try:
+            return value.to_dict(orient="list")
+        except TypeError:
+            return value.to_dict(as_series=False)
     if isinstance(value, (int, float, str, bool)):
         return value
     if hasattr(value, "tolist"):  # numpy arrays
@@ -112,6 +129,8 @@ class BaseSchema(BaseModel):
             "ArrayDataFit",
             "Parameter",
             "DirectEntry",
+            "Validation",
+            "Calculation",
         ):
             config["type"] = cls_name
         return config
@@ -159,9 +178,10 @@ class Pipeline(BaseSchema):
             else:
                 elem_config = {}
 
-            # Determine element_type from class name
-            cls_name = type(comp).__name__
-            elem_config["element_type"] = _get_element_type(cls_name)
+            # Set element_type only for known schema types; raw configs (e.g. dicts) keep their existing element_type
+            elem_type = _get_element_type(comp)
+            if elem_type is not None:
+                elem_config["element_type"] = elem_type
             config["elements"][name] = elem_config
 
         # Add other fields

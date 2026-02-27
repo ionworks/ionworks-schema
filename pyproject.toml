@@ -24,6 +24,9 @@ classifiers = [
 keywords = ["ionworks", "battery", "pydantic", "schema", "pipeline"]
 dependencies = ["pydantic>=2.0", "numpy", "pandas"]
 
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov"]
+
 [project.urls]
 Homepage = "https://ionworks.com"
 Documentation = "https://docs.ionworks.com"
