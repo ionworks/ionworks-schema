@@ -13,33 +13,52 @@ class DirectEntry(BaseSchema):
 
     DirectEntry elements supply pre-defined parameter values to the pipeline,
     typically from literature, manufacturer specifications, or manual entry.
+    Can also reference a completed Ionworks Studio pipeline by ``pipeline_id``.
 
     Parameters
     ----------
-    parameters : dict
+    parameters : dict, optional
         Dictionary of parameter names and values to provide.
     source : str, optional
         Reference or description of where these parameters came from.
+    pipeline_id : str, optional
+        ID of a completed pipeline on Ionworks Studio.
     """
 
     parameters: dict[str, Any] = Field(
-        ..., description="Dictionary of parameter names and values to provide"
+        default_factory=dict,
+        description="Dictionary of parameter names and values to provide",
     )
     source: str | None = Field(
         default=None,
         description="Reference or description of where these parameters came from",
     )
+    pipeline_id: str | None = Field(
+        default=None,
+        description="ID of a completed pipeline on Ionworks Studio",
+    )
 
     def __init__(
         self,
-        parameters: dict[str, Any],
+        parameters: dict[str, Any] | None = None,
         source: str | None = None,
+        pipeline_id: str | None = None,
         **kwargs,
     ):
-        super().__init__(parameters=parameters, source=source, **kwargs)
+        super().__init__(
+            parameters=parameters or {},
+            source=source,
+            pipeline_id=pipeline_id,
+            **kwargs,
+        )
 
     def to_config(self) -> dict:
         """Convert to parser-compatible format."""
+        if self.pipeline_id is not None:
+            return {
+                "element_type": "entry",
+                "pipeline_id": self.pipeline_id,
+            }
         return {
             "element_type": "entry",
             "values": self.parameters,

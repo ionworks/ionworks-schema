@@ -72,3 +72,20 @@ def test_piecewise_interpolation_2d_minimal():
     assert entry.base_parameter_name == "Param"
     assert entry.breakpoint1_values == [0.0, 1.0]
     assert entry.breakpoint2_values == [0.0, 1.0]
+
+
+def test_direct_entry_with_pipeline_id():
+    """DirectEntry with pipeline_id serializes to pipeline_id config."""
+    entry = DirectEntry(pipeline_id="abc-123")
+    cfg = entry.to_config()
+    assert cfg["element_type"] == "entry"
+    assert cfg["pipeline_id"] == "abc-123"
+    assert "values" not in cfg
+
+
+def test_direct_entry_pipeline_id_in_pipeline():
+    """DirectEntry with pipeline_id is recognized as an entry element in a Pipeline."""
+    from ionworks_schema.base import _get_element_type
+
+    entry = DirectEntry(pipeline_id="abc-123")
+    assert _get_element_type(entry) == "entry"
