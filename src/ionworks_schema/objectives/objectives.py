@@ -55,6 +55,7 @@ class BaseObjective(BaseSchema):
         constraints=None,
         penalties=None,
         parameters=None,
+        **kwargs,
     ):
         super().__init__(
             data_input=data_input,
@@ -65,6 +66,7 @@ class BaseObjective(BaseSchema):
             constraints=constraints,
             penalties=penalties,
             parameters=parameters,
+            **kwargs,
         )
 
 
@@ -122,6 +124,7 @@ class FittingObjective(BaseObjective):
         constraints=None,
         penalties=None,
         parameters=None,
+        **kwargs,
     ):
         # Pass data_input through so Pydantic receives it for validation (schema only; pipeline BaseObjective does not take it)
         super().__init__(
@@ -133,6 +136,7 @@ class FittingObjective(BaseObjective):
             constraints=constraints,
             penalties=penalties,
             parameters=parameters,
+            **kwargs,
         )
 
 
