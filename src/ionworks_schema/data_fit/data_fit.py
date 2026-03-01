@@ -131,6 +131,8 @@ class DataFit(BaseSchema):
 
         Note: These options only have an effect if model.convert_to_format == 'casadi'"""
 
+    _exclude_fields = {"source"}
+
     objectives: Any = Field(...)
     source: Any = Field(default="")
     parameters: Any | None = Field(default=None)

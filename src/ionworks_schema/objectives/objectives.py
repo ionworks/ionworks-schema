@@ -507,6 +507,16 @@ class DesignObjective(BaseObjective):
             parameters=parameters,
         )
 
+    def to_config(self) -> dict:
+        config = super().to_config()
+        # Move actions into options to match parser expectations
+        options = config.pop("options", {}) or {}
+        if "actions" in config:
+            options["actions"] = config.pop("actions")
+        if options:
+            config["options"] = options
+        return config
+
 
 class EIS(FittingObjective):
     """Objective for electrochemical impedance spectroscopy (EIS) data. Simulates the
