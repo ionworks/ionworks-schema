@@ -29,8 +29,7 @@ def test_data_fit_minimal_with_parameters():
     )
     cfg = df.to_config()
     assert "objectives" in cfg
-    assert "source" in cfg
-    assert cfg["source"] == "test source"
+    assert "source" not in cfg  # source is excluded from serialization
     assert cfg.get("parameters") == {"x": 1.0}
 
 
