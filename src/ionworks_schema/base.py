@@ -2,6 +2,8 @@
 
 from typing import Any
 
+import pybamm
+from pybamm.expression_tree.operations.serialise import Serialise
 from pydantic import BaseModel, ConfigDict
 
 
@@ -22,6 +24,41 @@ def _get_element_type(comp: Any) -> str | None:
     return None
 
 
+def _serialize_pybamm_model(model):
+    """Serialize a pybamm model to a config dict.
+
+    Built-in models (those in pybamm.lithium_ion) are serialized as
+    {"type": "ClassName", "options": {...}}. Custom models are serialized
+    using pybamm's Serialise to {"type": "custom", "model": ...}.
+    """
+    class_name = model.__class__.__name__
+    if hasattr(pybamm.lithium_ion, class_name):
+        config = {"type": class_name}
+        if hasattr(model, "options"):
+            options = {k: v for k, v in model.options.items() if v is not None}
+            if options:
+                config["options"] = options
+        return config
+
+    config = {
+        "type": "custom",
+        "model": Serialise.serialise_custom_model(model),
+    }
+    if hasattr(model, "default_geometry"):
+        config["geometry"] = Serialise.serialise_custom_geometry(model.default_geometry)
+    if hasattr(model, "default_var_pts"):
+        config["var_pts"] = Serialise.serialise_var_pts(model.default_var_pts)
+    if hasattr(model, "default_spatial_methods"):
+        config["spatial_methods"] = Serialise.serialise_spatial_methods(
+            model.default_spatial_methods
+        )
+    if hasattr(model, "default_submesh_types"):
+        config["submesh_types"] = Serialise.serialise_submesh_types(
+            model.default_submesh_types
+        )
+    return config
+
+
 def _serialize_value(value):
     """Recursively serialize a value, calling to_config on schemas."""
     if value is None:
@@ -36,6 +73,8 @@ def _serialize_value(value):
         return value.to_config()
     if hasattr(value, "model_dump"):
         return value.model_dump(exclude_none=True)
+    if isinstance(value, pybamm.BaseModel):
+        return _serialize_pybamm_model(value)
     # pandas or polars DataFrame -> dict of lists for serialization
     if hasattr(value, "to_dict") and hasattr(value, "columns"):
         cls = type(value)
