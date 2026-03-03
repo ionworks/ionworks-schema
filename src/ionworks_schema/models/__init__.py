@@ -2,8 +2,8 @@
 
 from .models import (
     ECM,
-    LumpedSPMR,
     LumpedSPMeR,
+    LumpedSPMR,
     MSMRFullCellModel,
     MSMRHalfCellModel,
     SingleElectrodeLumpedSPMR,
