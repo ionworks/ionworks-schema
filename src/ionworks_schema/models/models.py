@@ -57,3 +57,39 @@ class MSMRHalfCellModel(BaseSchema):
 
     def __init__(self, electrode, options=None):
         super().__init__(electrode=electrode, options=options)
+
+
+class LumpedSPMR(BaseSchema):
+    """A class for the Lumped Single Particle Model with Resistance."""
+
+    options: Any | None = Field(default=None)
+
+    def __init__(self, options=None):
+        super().__init__(options=options)
+
+
+class LumpedSPMeR(BaseSchema):
+    """A class for the Lumped Single Particle Model with electrolyte and Resistance."""
+
+    options: Any | None = Field(default=None)
+
+    def __init__(self, options=None):
+        super().__init__(options=options)
+
+
+class SingleElectrodeLumpedSPMR(BaseSchema):
+    """A class for the single-electrode Lumped SPM with Resistance."""
+
+    options: Any | None = Field(default=None)
+
+    def __init__(self, options=None):
+        super().__init__(options=options)
+
+
+class ECM(BaseSchema):
+    """A class for the Equivalent Circuit Model."""
+
+    options: Any | None = Field(default=None)
+
+    def __init__(self, options=None):
+        super().__init__(options=options)
