@@ -18,13 +18,9 @@ class BaseObjective(BaseSchema):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the data fit
         process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     cost : :class:`ionworkspipeline.costs.ObjectiveFunction` or str, optional
         The cost function to use for the objective. If not provided, the default cost
         function will be used.
@@ -34,8 +30,7 @@ class BaseObjective(BaseSchema):
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None."""
+        before fitting. Default is None."""
 
     options: Any | None = Field(default=None)
     callbacks: Any | None = Field(default=None)
@@ -86,13 +81,6 @@ class FittingObjective(BaseObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
     cost : :class:`ionworkspipeline.costs.ObjectiveFunction` or str, optional
         The cost function to use for the objective. If not provided, the default cost
         function will be used.
@@ -100,10 +88,12 @@ class FittingObjective(BaseObjective):
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None."""
+        before fitting. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -126,7 +116,6 @@ class FittingObjective(BaseObjective):
         parameters=None,
         **kwargs,
     ):
-        # Pass data_input through so Pydantic receives it for validation (schema only; pipeline BaseObjective does not take it)
         super().__init__(
             data_input=data_input,
             options=options,
@@ -157,17 +146,16 @@ class SimulationObjective(FittingObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Default is None."""
 
     pass
 
@@ -194,16 +182,15 @@ class CalendarAgeing(SimulationObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None.
+        before fitting. Default is None.
     """
 
     data_input: Any = Field(...)
@@ -278,36 +265,15 @@ class CurrentDriven(SimulationObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-
-        The following custom parameters are available:
-
-        * Initial temperature [K]: Function to calculate the initial temperature.
-          Default is `iwp.data_fits.custom_parameters.initial_temperature`.
-        * Ambient temperature [K]: Function to calculate the ambient temperature.
-          Default is `iwp.data_fits.custom_parameters.initial_temperature`.
-        * Initial concentration in negative electrode [mol.m-3]: Function to calculate
-          the initial concentration in the negative electrode for full cells.
-          Default is `iwp.data_fits.custom_parameters.initial_concentration_from_parameter_values("full", "negative")`.
-        * Initial concentration in positive electrode [mol.m-3]: Function to calculate
-          the initial concentration in the positive electrode for full cells.
-          Default is `iwp.data_fits.custom_parameters.initial_concentration_from_parameter_values("full", "positive")`.
-        * Initial concentration in {working_electrode} electrode [mol.m-3]: Function to calculate
-          the initial concentration in the working electrode for half cells.
-          Default is `iwp.data_fits.custom_parameters.initial_concentration_from_parameter_values("half", {working_electrode})`.
-
-        These custom parameters are functions that take `parameter_values` and `data` as arguments
-        and return the calculated value. They can be overridden by providing new functions in the
-        `custom_parameters` dictionary.
-        See :class:`FittingObjective`.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None.
+        before fitting. Default is None.
     """
 
     data_input: Any = Field(...)
@@ -372,16 +338,15 @@ class CycleAgeing(SimulationObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None.
+        before fitting. Default is None.
     """
 
     data_input: Any = Field(...)
@@ -449,13 +414,9 @@ class DesignObjective(BaseObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     cost : :class:`ionworkspipeline.costs.ObjectiveFunction` or str, optional
         The cost function to use for the objective. If not provided, the default cost
         function will be used.
@@ -463,8 +424,7 @@ class DesignObjective(BaseObjective):
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None.
+        before fitting. Default is None.
     """
 
     actions: Any = Field(...)
@@ -522,7 +482,7 @@ class EIS(FittingObjective):
     """Objective for electrochemical impedance spectroscopy (EIS) data. Simulates the
     model response at the given frequencies and compares the impedance to the data.
 
-    This objective uses the ``pybamm-eis`` package to simulate the EIS experiment in the
+    This objectives uses the `pybammeis` package to simulate the EIS experiment in the
     frequency domain.
 
 
@@ -543,16 +503,15 @@ class EIS(FittingObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None."""
+        before fitting. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -602,20 +561,24 @@ class ElectrodeBalancing(FittingObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
     callbacks: Any | None = Field(default=None)
-    custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    custom_parameters: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -625,6 +588,7 @@ class ElectrodeBalancing(FittingObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
@@ -633,6 +597,7 @@ class ElectrodeBalancing(FittingObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -657,12 +622,15 @@ class ElectrodeBalancingHalfCell(FittingObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Default is None."""
 
     electrode: Any = Field(...)
     data_input: Any = Field(...)
@@ -671,6 +639,7 @@ class ElectrodeBalancingHalfCell(FittingObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -681,6 +650,7 @@ class ElectrodeBalancingHalfCell(FittingObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             electrode=electrode,
@@ -690,6 +660,7 @@ class ElectrodeBalancingHalfCell(FittingObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -729,13 +700,16 @@ class MSMRFullCell(FittingObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Default is None.
 
     References
     ----------
@@ -747,26 +721,29 @@ class MSMRFullCell(FittingObjective):
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
     callbacks: Any | None = Field(default=None)
-    custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    custom_parameters: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
         data_input,
         options=None,
         callbacks=None,
-        custom_parameters=None,
         constraints=None,
         penalties=None,
+        custom_parameters=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
             options=options,
             callbacks=callbacks,
-            custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            custom_parameters=custom_parameters,
+            parameters=parameters,
         )
 
 
@@ -829,37 +806,43 @@ class MSMRHalfCell(FittingObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    custom_parameters : dict, optional
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
     callbacks: Any | None = Field(default=None)
-    custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    custom_parameters: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
         data_input,
         options=None,
         callbacks=None,
-        custom_parameters=None,
         constraints=None,
         penalties=None,
+        custom_parameters=None,
+        parameters=None,
     ):
         super().__init__(
             data_input=data_input,
             options=options,
             callbacks=callbacks,
-            custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            custom_parameters=custom_parameters,
+            parameters=parameters,
         )
 
 
@@ -909,12 +892,16 @@ class OCPHalfCell(FittingObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
-        A list of penalties to apply to the objective."""
+        A list of penalties to apply to the objective.
+    parameters : dict or :class:`pybamm.ParameterValues`, optional
+        Objective-specific parameter values merged into the global parameter values
+        before fitting. Default is None.
+    """
 
     electrode: Any = Field(...)
     data_input: Any = Field(...)
@@ -923,6 +910,7 @@ class OCPHalfCell(FittingObjective):
     custom_parameters: Any | None = Field(default=None)
     constraints: Any | None = Field(default=None)
     penalties: Any | None = Field(default=None)
+    parameters: Any | None = Field(default=None)
 
     def __init__(
         self,
@@ -933,6 +921,7 @@ class OCPHalfCell(FittingObjective):
         custom_parameters=None,
         constraints=None,
         penalties=None,
+        parameters=None,
     ):
         super().__init__(
             electrode=electrode,
@@ -942,6 +931,7 @@ class OCPHalfCell(FittingObjective):
             custom_parameters=custom_parameters,
             constraints=constraints,
             penalties=penalties,
+            parameters=parameters,
         )
 
 
@@ -967,10 +957,6 @@ class Pulse(SimulationObjective):
             * model: :class:``pybamm.BaseModel``
                 The model to fit. No default is provided, but this option is required
                 (a model must be passed in).
-            * correct OCV difference: str
-                Whether to correct for the difference between the true OCV and the
-                simulated OCV in the objective function. Default is false, but
-                correcting for this difference can improve the fit.
             * simulation_kwargs: dict
                 Keyword arguments to pass to the simulation (:class:`iwp.Simulation`). Default is None.
             * objective variables: callable
@@ -999,57 +985,19 @@ class Pulse(SimulationObjective):
                 `interpolant_rtol` based on the current data. Default is False.
             * solver_max_save_points: int, optional
                 Maximum number of points to save in the solver. Disabled by default.
-            * Initial SOC: float, optional
-                Initial state of charge (0 to 1). Applied before the simulation via
-                :class:`~ionworkspipeline.direct_entries.InitialStateOfCharge`.
-                Default is None.
-            * Initial voltage [V]: float, optional
-                Initial voltage in Volts. Cannot be used together with
-                ``Initial SOC``. Applied via
-                :class:`~ionworkspipeline.direct_entries.InitialVoltage`.
-                Default is None.
     callbacks : list of callable, optional
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only. The following
-        default custom parameters are used:
-
-        For all models:
-
-        * Initial temperature [K]: Function to calculate the initial temperature.
-          Default is `iwp.data_fits.custom_parameters.initial_temperature`.
-        * Ambient temperature [K]: Function to calculate the ambient temperature.
-          Default is `iwp.data_fits.custom_parameters.initial_temperature`.
-
-        For full-cell models:
-
-        * Initial concentration in negative electrode [mol.m-3]: Function to calculate
-          the initial concentration in the negative electrode for full cells.
-          Default is `iwp.data_fits.custom_parameters.initial_concentration_from_voltage("full", "negative")`.
-        * Initial concentration in positive electrode [mol.m-3]: Function to calculate
-          the initial concentration in the positive electrode for full cells.
-          Default is `iwp.data_fits.custom_parameters.initial_concentration_from_voltage("full", "positive")`.
-
-        For half-cell models:
-
-        * Initial concentration in {working_electrode} electrode [mol.m-3]: Function to calculate
-          the initial concentration in the working electrode for half cells.
-          Default is `iwp.data_fits.custom_parameters.initial_concentration_from_voltage("half", {working_electrode})`.
-
-        These custom parameters are functions that take `parameter_values` and `data` as arguments
-        and return the calculated value. They can be overridden by providing new functions in the
-        `custom_parameters` dictionary.
-
-        See :class:`FittingObjective` for more details.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None."""
+        before fitting. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -1085,7 +1033,7 @@ class Resistance(FittingObjective):
 
     Parameters
     ----------
-    data_input : :class:`pd.DataFrame`
+    data_input : pd.DataFrame, polars.DataFrame, or ionworksdata.DataLoader
         The data to use for the fit, see :class:`FittingObjective`. Should have columns
         "SOC" and "Resistance [Ohm]", plus any additional columns required by the
         resistance model.
@@ -1099,16 +1047,15 @@ class Resistance(FittingObjective):
         A class with methods that get called at various points during the datafit
         process
     custom_parameters : dict, optional
-        A dictionary of parameters to use within this objective only.
-        See :class:`FittingObjective`.
+        A dictionary of custom parameters to use for the objective.
+        Deprecated, use `parameters` instead.
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None."""
+        before fitting. Default is None."""
 
     data_input: Any = Field(...)
     options: Any | None = Field(default=None)
@@ -1156,18 +1103,10 @@ class SimulationObjective(FittingObjective):
     callbacks : :class:`ionworkspipeline.callbacks.Callback` or list of callbacks
         A class with methods that get called at various points during the datafit
         process
-    custom_parameters : dict of str: float or callable, optional
-        A dictionary of parameters to use within this objective only. Values in
-        this dictionary will override any values for the simulation within this
-        objective but will not be passed on as results of the `DataFit` object.
-        If a callable is provided, it must take the form of a function that takes in
-        a dictionary of parameters and the `data_input` "data" dictionary and returns
-        the value of the parameter (which can be a float or function, as in PyBaMM).
     constraints : list[Constraint], optional
         A list of equality and inequality constraints to apply to the objective.
     penalties : list[Penalty], optional
         A list of penalties to apply to the objective.
     parameters : dict or :class:`pybamm.ParameterValues`, optional
         Objective-specific parameter values merged into the global parameter values
-        before fitting. Unlike ``custom_parameters``, these are static values rather
-        than callables. Default is None."""
+        before fitting. Default is None."""
