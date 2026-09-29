@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ionworks-schema"
-version = "0.29.0"
+version = "0.30.0"
 description = "Pydantic schemas for building Ionworks pipeline configurations"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 keywords = ["ionworks", "battery", "pydantic", "schema", "pipeline"]
-dependencies = ["pydantic>=2.13.5,<3", "pandas>=2.0", "pybamm>=26.8.0.0"]
+dependencies = ["pydantic>=2.13.5,<3", "pandas>=2.0", "pybamm>=26.9.0.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=9.1.1", "pytest-cov>=7.0"]
@@ -31,7 +31,7 @@ docs = [
     "pydata-sphinx-theme",
     "sphinx-design",
 ]
-plot = ["matplotlib>=3.7"]
+plot = ["matplotlib>=3.11.2"]
 all = ["ionworks-schema[dev,docs,plot]"]
 
 [project.urls]

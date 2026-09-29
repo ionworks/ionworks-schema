@@ -9,6 +9,16 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.30.0] - 2026-09-29
+
+### Breaking changes
+- `DataLoaderOptions` and `DataLoaderTransforms` drop the `gitt_to_ocp` field, so
+  passing it now fails validation. Use `rest_to_ocp` instead.
+
+### Changed
+- Raised the `pybamm` lower bound to `>=26.9.0.0`, and the `matplotlib` lower bound
+  in the `plot` extra to `>=3.11.2`.
+
 ## [0.29.0] - 2026-09-25
 
 ### Added

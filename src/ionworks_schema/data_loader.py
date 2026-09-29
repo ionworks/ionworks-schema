@@ -15,11 +15,8 @@ class DataLoaderTransforms(BaseSchema):
 
     Parameters
     ----------
-    gitt_to_ocp : bool, optional
-        Reduce a GITT measurement to an OCP curve.
     rest_to_ocp : bool, optional
-        Reduce rest periods to an OCP curve. Mutually exclusive with
-        ``gitt_to_ocp``.
+        Reduce rest periods to an OCP curve.
     sort : bool, optional
         Sort by the independent variable.
     remove_duplicates : bool, optional
@@ -32,7 +29,7 @@ class DataLoaderTransforms(BaseSchema):
         Resample onto this spacing or these points.
     keep_first_ocp_point : bool, optional
         Keep the first point when reducing to an OCP curve. Ignored unless
-        ``gitt_to_ocp`` or ``rest_to_ocp`` is set.
+        ``rest_to_ocp`` is set.
 
     Examples
     --------
@@ -43,14 +40,8 @@ class DataLoaderTransforms(BaseSchema):
     # Merged into the caller's own transform dict, so no discriminator is wanted.
     _emit_type: bool = False
 
-    gitt_to_ocp: bool | None = Field(
-        default=None, description="Reduce a GITT measurement to an OCP curve."
-    )
     rest_to_ocp: bool | None = Field(
-        default=None,
-        description=(
-            "Reduce rest periods to an OCP curve. Mutually exclusive with gitt_to_ocp."
-        ),
+        default=None, description="Reduce rest periods to an OCP curve."
     )
     sort: bool | None = Field(
         default=None, description="Sort by the independent variable."
@@ -85,8 +76,8 @@ class DataLoaderOptions(BaseSchema):
     ----------
     transforms : dict, optional
         Preprocessing steps to apply, keyed by name — ``sort``,
-        ``remove_duplicates``, ``remove_extremes``, ``gitt_to_ocp``,
-        ``rest_to_ocp``, ``keep_first_ocp_point``, ``filters``, ``interpolate``.
+        ``remove_duplicates``, ``remove_extremes``, ``rest_to_ocp``,
+        ``keep_first_ocp_point``, ``filters``, ``interpolate``.
         Each may also be given at the top level, which is the older spelling.
     first_step : int, str, or dict, optional
         Where to start the slice: a step index, a Polars SQL query against the
@@ -100,11 +91,8 @@ class DataLoaderOptions(BaseSchema):
         Deprecated spelling of ``first_step``.
     last_step_dict : dict, optional
         Deprecated spelling of ``last_step``.
-    gitt_to_ocp : bool, optional
-        Reduce a GITT measurement to an OCP curve.
     rest_to_ocp : bool, optional
-        Reduce rest periods to an OCP curve. Mutually exclusive with
-        ``gitt_to_ocp``.
+        Reduce rest periods to an OCP curve.
     sort : bool, optional
         Sort by the independent variable before use.
     remove_duplicates : bool, optional
@@ -117,7 +105,7 @@ class DataLoaderOptions(BaseSchema):
         Resample onto this spacing or these points.
     keep_first_ocp_point : bool, optional
         Keep the first point when reducing to an OCP curve. Ignored unless
-        ``gitt_to_ocp`` or ``rest_to_ocp`` is set.
+        ``rest_to_ocp`` is set.
 
     Examples
     --------
@@ -147,14 +135,8 @@ class DataLoaderOptions(BaseSchema):
     last_step_dict: int | str | dict[str, Any] | None = Field(
         default=None, description="Deprecated spelling of last_step."
     )
-    gitt_to_ocp: bool | None = Field(
-        default=None, description="Reduce a GITT measurement to an OCP curve."
-    )
     rest_to_ocp: bool | None = Field(
-        default=None,
-        description=(
-            "Reduce rest periods to an OCP curve. Mutually exclusive with gitt_to_ocp."
-        ),
+        default=None, description="Reduce rest periods to an OCP curve."
     )
     sort: bool | None = Field(
         default=None, description="Sort by the independent variable."
