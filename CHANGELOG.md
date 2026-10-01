@@ -9,6 +9,20 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.31.0] - 2026-09-30
+
+### Added
+- `CycleAgeingOptions.split_cc_cv`: emit a step the cycler logged as one CC-CV
+  charge as a constant-current step followed by a constant-voltage step. Default
+  `True`. Applies only to an experiment generated from data, like `termination`.
+
+### Changed
+- Docstrings for `Penalty` and `Constraint` now say that each term contributes
+  `regularizer_weight * fun**2` to the cost. Pass the unsquared quantity as
+  `fun`.
+- Optimizer docstrings now say that `Constraint` objects are applied as a
+  penalty on the cost by every scipy optimizer and method.
+
 ## [0.30.0] - 2026-09-29
 
 ### Breaking changes

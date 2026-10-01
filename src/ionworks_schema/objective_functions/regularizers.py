@@ -93,6 +93,10 @@ class Prior(Regularizer):
 class Constraint(Regularizer):
     """Equality or inequality constraint evaluated at fit time.
 
+    A constraint is a soft penalty on the cost, ``w * max(0, g(x) - h(x))**2`` or
+    ``w * f(x)**2``, applied the same way by every scipy optimizer and method. A fit
+    can sit slightly past the boundary; raise ``regularizer_weight`` to tighten it.
+
     Parameters
     ----------
     fun : pybamm.Symbol or Number
@@ -134,18 +138,25 @@ class Constraint(Regularizer):
 class Penalty(Regularizer):
     """Soft penalty term added to the fit cost.
 
+    The penalty adds ``regularizer_weight * fun**2`` to the cost: scalar optimizers get
+    that value directly, and least-squares optimizers get a residual that they square,
+    ``sqrt(regularizer_weight) * fun`` for sum- or mean-of-squares costs and rescaled
+    for costs that scalarize residuals differently, so the term is the same. Pass the
+    unsquared quantity as ``fun``; squaring it first makes the term quartic.
+
     Parameters
     ----------
     fun : pybamm.Symbol or Number
-        Penalty expression as a ``pybamm.Symbol`` or a constant number.
+        Penalty expression as a ``pybamm.Symbol`` or a constant number. It is squared
+        before it is added to the cost.
     regularizer_weight : float, optional
-        Weight applied to the penalty term. Default is 1.0.
+        Weight applied to the squared penalty term. Default is 1.0.
 
     Examples
     --------
     >>> import pybamm
     >>> x = pybamm.InputParameter("x")
-    >>> pen = iws.objective_functions.Penalty(fun=x ** 2, regularizer_weight=0.1)
+    >>> pen = iws.objective_functions.Penalty(fun=x, regularizer_weight=0.1)
     >>> obj = iws.objectives.OCPHalfCell(
     ...     electrode="positive", data_input="path/to/ocp.csv",
     ...     penalties=[pen],
@@ -156,7 +167,10 @@ class Penalty(Regularizer):
     type: Literal["Penalty"] = "Penalty"
     fun: _RegularizerFun = Field(
         ...,
-        description=("Penalty expression as a ``pybamm.Symbol`` or a constant number."),
+        description=(
+            "Penalty expression as a ``pybamm.Symbol`` or a constant number. The "
+            "cost gains ``regularizer_weight * fun**2``, so pass it unsquared."
+        ),
     )
 
     def __init__(self, fun, regularizer_weight=None, type="Penalty"):

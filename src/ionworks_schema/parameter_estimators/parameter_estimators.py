@@ -1265,19 +1265,15 @@ class Sampler(BaseSchema):
 class ScipyBasinhopping(_PassthroughOptimizer):
     """Global optimizer using basin-hopping with local minimization.
 
-    Basin-hopping is a two-phase stochastic algorithm that combines random perturbations
-    with local minimization to escape local minima. It repeatedly applies random
-    perturbations to the current minimum, accepts or rejects based on the Metropolis
-    criterion, and performs local minimization from the perturbed position. This approach
-    efficiently explores the energy landscape while refining solutions locally.
+    Basin-hopping alternates random perturbations of the current minimum, accepted or
+    rejected by the Metropolis criterion, with local minimization from the new point.
 
     Notes
     -----
     - Accepts initial guess `x0` as the starting point for optimization
-    - More efficient than pure global search for moderately complex landscapes
     - Local minimizer can be customized via `minimizer_kwargs` parameter
     - Stochastic algorithm (use `seed` parameter for reproducibility)
-    - Supports constraints through the local minimizer (via `minimizer_kwargs`)
+    - ``Constraint`` objects are applied as a penalty on the cost
     - Temperature parameter controls acceptance of uphill moves (higher = more exploration)
 
     Parameters
@@ -1312,13 +1308,12 @@ class ScipyDifferentialEvolution(_PassthroughOptimizer):
     """
     Global stochastic optimizer using differential evolution with parallel evaluation.
 
-    Differential evolution is a robust global optimization algorithm that evolves a
-    population of candidate solutions across generations. It excels at handling
-    multi-modal, non-convex objective landscapes and requires no gradient information.
+    Evolves a population of candidate solutions across generations; suited to
+    multi-modal, non-convex landscapes and needs no gradient information.
 
     Notes
     -----
-    - Does not support custom equality or inequality constraints
+    - ``Constraint`` objects are applied as a penalty on the cost
     - Initial guess `x0` is ignored; initial population is generated from bounds
     - Polish option disabled by default as it conventionally significantly decreases performance
     - Callback logs only best solution per generation (not individual evaluations)
@@ -1373,10 +1368,9 @@ class ScipyDualAnnealing(_PassthroughOptimizer):
 
     Notes
     -----
-    - Does not support custom equality or inequality constraints
+    - ``Constraint`` objects are applied as a penalty on the cost
     - Accepts optional initial guess `x0` to seed the search
     - Stochastic algorithm (use `seed` parameter for reproducibility)
-    - Generally faster convergence than pure simulated annealing
     - Good choice when gradient information is unavailable
 
     Parameters
@@ -1414,7 +1408,7 @@ class ScipyLeastSquares(_PassthroughOptimizer):
     - Requires objective functions that return an array (residual vector)
     - Automatically handles linear algebra errors by returning NaN values
     - More efficient than general minimization for least-squares structure
-    - Supports bound constraints but not general equality/inequality constraints
+    - ``Constraint`` objects are applied as penalty residuals
 
     Parameters
     ----------
@@ -1459,27 +1453,26 @@ class ScipyLsqLinear(_PassthroughOptimizer):
 
 
 class ScipyMinimize(_PassthroughOptimizer):
-    """General-purpose scalar minimization with support for constraints.
+    """General-purpose scalar minimization.
 
-    Wraps scipy's `minimize` function, providing access to multiple local optimization
-    algorithms (e.g., L-BFGS-B, SLSQP, trust-constr, COBYQA). Suitable for smooth,
-    scalar-valued objectives with optional equality and inequality constraints.
+    Wraps scipy's `minimize` local optimization algorithms (e.g., L-BFGS-B, Powell,
+    SLSQP, trust-constr, COBYQA).
 
     Notes
     -----
     - Requires objective functions that return a scalar value
-    - Supports bound constraints and custom equality/inequality constraints
-    - Choice of method depends on problem structure and constraint types
-    - Some methods (e.g., 'L-BFGS-B') support bounds only, not general constraints
+    - ``Constraint`` objects are applied as a penalty on the cost for every
+      ``method``, never as scipy ``constraints=``
 
     Parameters
     ----------
     method : str, optional
         Optimization algorithm. Common choices:
         - 'L-BFGS-B': Bound-constrained, gradient-based (default for bounded problems)
-        - 'SLSQP': Sequential Least Squares, supports all constraint types
-        - 'trust-constr': Modern trust-region method, supports all constraints
-        - 'COBYQA': Derivative-free, supports nonlinear constraints
+        - 'Powell': Derivative-free, bound-constrained
+        - 'SLSQP': Sequential Least Squares Programming
+        - 'trust-constr': Trust-region method
+        - 'COBYQA': Derivative-free quadratic-model method
     max_iterations : int, optional
         Maximum number of iterations. Passed to scipy as ``maxiter``.
     tol : float, optional
@@ -1507,13 +1500,12 @@ class ScipyShgo(_PassthroughOptimizer):
 
     SHGO (Simplicial Homology Global Optimization) uses topological techniques to
     identify and sample from all local minima basins. It's particularly effective
-    for problems with many local minima and supports general nonlinear constraints.
+    for problems with many local minima.
 
     Notes
     -----
     - Deterministic algorithm (reproducible results without random seed)
-    - Efficiently handles problems with many local optima
-    - Supports bound, equality, and inequality constraints
+    - ``Constraint`` objects are applied as a penalty on the cost
     - May be slower than stochastic methods for high-dimensional problems
     - Initial guess `x0` is ignored; sampling points determined by algorithm
 

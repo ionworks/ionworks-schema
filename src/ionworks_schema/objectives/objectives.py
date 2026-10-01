@@ -265,6 +265,17 @@ class CycleAgeingOptions(_ObjectiveOptions):
             "current closes the gap. Same restriction as termination."
         ),
     )
+    split_cc_cv: bool | None = Field(
+        default=None,
+        description=(
+            "Emit a step the cycler logged as one CC-CV charge as a "
+            "constant-current step followed by a constant-voltage step, rather "
+            "than as a current interpolant. Default True. A metric's step index "
+            "still counts the steps table's rows, and reads a split row as its two "
+            "steps joined into one. Rows of zero duration produce no step and are "
+            "not counted. Same restriction as termination."
+        ),
+    )
     objective_variables: list[str] | None = Field(
         default=None,
         alias="objective variables",
