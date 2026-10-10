@@ -150,7 +150,11 @@ def _validate_entry(data: dict):
     from . import direct_entries
 
     source = data.pop("source", None)
-    named = [k for k in ("path", "values", "pipeline_id") if data.get(k) is not None]
+    named = [
+        k
+        for k in ("path", "values", "pipeline_id", "cell_spec_id")
+        if data.get(k) is not None
+    ]
     if len(named) > 1:
         raise ValueError(
             "An entry takes its parameters from one place, but this config sets "
@@ -162,7 +166,7 @@ def _validate_entry(data: dict):
         return direct_entries.FUNCTION_SCHEMAS["from_json"].model_validate(
             {"file_path": data.pop("path"), **data}
         )
-    if data.get("values") is not None or data.get("pipeline_id") is not None:
+    if any(data.get(k) is not None for k in ("values", "pipeline_id", "cell_spec_id")):
         payload = dict(data)
         if "values" in payload:
             payload["parameters"] = payload.pop("values")
@@ -181,7 +185,8 @@ def _validate_entry(data: dict):
             data["source"] = source
         return schema_cls.model_validate(data)
     raise ValueError(
-        "Entry config must include one of 'path', 'values', 'name', 'pipeline_id'."
+        "Entry config must include one of 'path', 'values', 'name', 'pipeline_id', "
+        "'cell_spec_id'."
     )
 
 

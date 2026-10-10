@@ -3,10 +3,23 @@
 from collections.abc import Mapping
 from typing import Any, Literal
 
-from pydantic import Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .._types import NumberLike, ParameterValuesLike
 from ..base import BaseSchema
+
+
+class ProvenanceRecord(BaseModel):
+    """Where one parameter of a direct entry was read from."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    #: Where the value was read, e.g. ``anode.properties.thickness``.
+    path: str
+    #: The value as written there, before unit conversion.
+    value: float
+    #: The unit it was written in, e.g. ``um``; empty when it has none.
+    unit: str = ""
 
 
 class DirectEntry(BaseSchema):
@@ -16,7 +29,9 @@ class DirectEntry(BaseSchema):
     values to the pipeline — typically from literature, manufacturer
     specifications, or manual entry. May alternatively reference a completed
     Ionworks Studio pipeline via ``pipeline_id``, in which case the parameter
-    values are fetched from that pipeline's results at run time.
+    values are fetched from that pipeline's results at run time, or a cell
+    specification via ``cell_spec_id``, in which case they are read from its
+    design values (thicknesses, porosities, ratings and so on).
 
     Parameters
     ----------
@@ -37,6 +52,29 @@ class DirectEntry(BaseSchema):
         parameter values are fetched from that pipeline's results
         instead of from ``parameters``. The referenced pipeline must
         be in the ``completed`` state.
+    keep : list of str, optional
+        With ``pipeline_id``, the only parameters to take from that pipeline's
+        results, e.g. the fitted values. Without it, every parameter the pipeline
+        produced is taken.
+    cell_spec_id : str, optional
+        ID of a cell specification on Ionworks Studio to read the parameter
+        values from, using ``mapping``. They are read once, when the pipeline is
+        submitted, so later edits to the specification don't change it.
+    mapping : dict of str to str, optional
+        With ``cell_spec_id``, the JSON path in the specification of each
+        parameter's value, e.g. ``anode.properties.thickness``,
+        ``anode.material.definition.particle_size_d50`` or ``ratings.capacity``:
+        the header of its column in the measurements table. Path segments are
+        letters, digits and underscores. Each value is converted to the unit in its
+        parameter's name, so ``72.225 um`` becomes ``7.2225e-05`` for
+        ``"Negative electrode thickness [m]"`` and ``40 percent`` becomes ``0.4``
+        for ``"Negative electrode porosity"``. Every path must name a value the
+        specification has.
+    provenance : dict of str to ProvenanceRecord, optional
+        Where each parameter came from, keyed by parameter name: the ``path`` it
+        was read from and the ``value`` and ``unit`` written there. A cell
+        specification entry records it, e.g.
+        ``{"path": "anode.properties.thickness", "value": 72.225, "unit": "um"}``.
 
     Examples
     --------
@@ -48,6 +86,17 @@ class DirectEntry(BaseSchema):
     ...     source="datasheet",
     ... )
     >>> config = iws.Pipeline({"known": known}).to_config()
+
+    Geometry read from a cell specification:
+
+    >>> design = iws.direct_entries.DirectEntry(
+    ...     cell_spec_id="<cell spec id>",
+    ...     mapping={
+    ...         "Negative electrode thickness [m]": "anode.properties.thickness",
+    ...         "Negative electrode porosity": "anode.properties.porosity",
+    ...         "Nominal cell capacity [A.h]": "ratings.capacity",
+    ...     },
+    ... )
     """
 
     parameters: ParameterValuesLike = Field(
@@ -78,30 +127,98 @@ class DirectEntry(BaseSchema):
             "in the ``completed`` state."
         ),
     )
+    keep: list[str] | None = Field(
+        default=None,
+        description=(
+            "With ``pipeline_id``, the only parameters to take from that "
+            "pipeline's results, e.g. the fitted values. Without it, every "
+            "parameter the pipeline produced is taken."
+        ),
+    )
+    cell_spec_id: str | None = Field(
+        default=None,
+        description=(
+            "ID of a cell specification on Ionworks Studio to read the parameter "
+            "values from, using ``mapping``. They are read once, when the pipeline "
+            "is submitted, so later edits to the specification don't change it."
+        ),
+    )
+    mapping: dict[str, str] | None = Field(
+        default=None,
+        description=(
+            "With ``cell_spec_id``, the JSON path in the specification of each "
+            "parameter's value, e.g. ``anode.properties.thickness``, "
+            "``anode.material.definition.particle_size_d50`` or "
+            "``ratings.capacity``: the header of its column in the measurements "
+            "table. Path segments are letters, digits and underscores. Each value "
+            "is converted to the unit in its parameter's name, so ``72.225 um`` "
+            "becomes ``7.2225e-05`` for ``'Negative electrode thickness [m]'`` and "
+            "``40 percent`` becomes ``0.4`` for ``'Negative electrode porosity'``. "
+            "Every path must name a value the specification has."
+        ),
+    )
+    provenance: dict[str, ProvenanceRecord] | None = Field(
+        default=None,
+        description=(
+            "Where each parameter came from, keyed by parameter name: the "
+            "``path`` it was read from and the ``value`` and ``unit`` written "
+            "there. A cell specification entry records it, e.g. "
+            "``{'path': 'anode.properties.thickness', 'value': 72.225, "
+            "'unit': 'um'}``."
+        ),
+    )
 
     def __init__(
         self,
         parameters: Mapping[str, Any] | None = None,
         source: str | None = None,
         pipeline_id: str | None = None,
+        keep: list[str] | None = None,
+        cell_spec_id: str | None = None,
+        mapping: Mapping[str, str] | None = None,
         **kwargs,
     ):
         super().__init__(
             parameters=parameters if parameters is not None else {},
             source=source,
             pipeline_id=pipeline_id,
+            keep=keep,
+            cell_spec_id=cell_spec_id,
+            mapping=dict(mapping) if mapping is not None else None,
             **kwargs,
         )
 
     @model_validator(mode="after")
     def _one_source_of_parameters(self):
-        """Parameters come from this entry or from the referenced pipeline."""
-        if self.parameters and self.pipeline_id is not None:
+        """Parameters come from this entry, a referenced pipeline or a cell spec."""
+        named = [
+            k
+            for k, set_ in (
+                ("parameters", bool(self.parameters)),
+                ("pipeline_id", self.pipeline_id is not None),
+                ("cell_spec_id", self.cell_spec_id is not None),
+            )
+            if set_
+        ]
+        if len(named) > 1:
             raise ValueError(
                 "A DirectEntry takes its parameters from one place, but this one "
-                f"sets both parameters and pipeline_id={self.pipeline_id!r}. Keep "
-                "the one you meant."
+                f"sets {' and '.join(named)}. Keep the one you meant."
             )
+        if self.keep is not None and not self.keep:
+            raise ValueError("keep names no parameters to take from the pipeline")
+        if self.keep is not None and self.pipeline_id is None:
+            raise ValueError(
+                "keep picks parameters from a referenced pipeline's results, so it "
+                "needs a pipeline_id"
+            )
+        if (self.cell_spec_id is None) != (self.mapping is None):
+            raise ValueError(
+                "A cell spec entry needs both cell_spec_id and mapping: the "
+                "specification to read, and the parameter each of its values sets"
+            )
+        if self.mapping is not None and not self.mapping:
+            raise ValueError("mapping names no parameters to read from the cell spec")
         return self
 
     def to_config(self) -> dict:
@@ -118,6 +235,17 @@ class DirectEntry(BaseSchema):
                 "element_type": "entry",
                 "pipeline_id": self.pipeline_id,
             }
+            if self.keep is not None:
+                config["keep"] = list(self.keep)
+            if self.source is not None:
+                config["source"] = self.source
+            return config
+        if self.cell_spec_id is not None:
+            config = {
+                "element_type": "entry",
+                "cell_spec_id": self.cell_spec_id,
+                "mapping": dict(self.mapping),
+            }
             if self.source is not None:
                 config["source"] = self.source
             return config
@@ -130,6 +258,10 @@ class DirectEntry(BaseSchema):
         }
         if self.source is not None:
             config["source"] = self.source
+        if self.provenance is not None:
+            config["provenance"] = {
+                k: v.model_dump() for k, v in self.provenance.items()
+            }
         return config
 
 

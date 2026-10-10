@@ -9,6 +9,26 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.32.0] - 2026-10-09
+
+### Added
+- `iws.direct_entries.DirectEntry(pipeline_id=..., keep=[...])` takes only the
+  named parameters from a completed pipeline. A name the pipeline did not
+  produce, or an empty `keep`, is an error. Without `keep`, every parameter is
+  taken, as before.
+- `iws.direct_entries.DirectEntry(cell_spec_id=..., mapping={...})` reads
+  parameter values from a cell specification. `mapping` gives each parameter's
+  JSON path in the specification (e.g. `"anode.properties.thickness"`), and each
+  value is converted to the unit in the parameter's name. Values are read once,
+  when the pipeline is submitted.
+- `DirectEntry.provenance` records where each parameter came from: the path it
+  was read from, and the value and unit written there.
+
+### Deprecated
+- Constructing `iws.SimplePipeline` emits a `DeprecationWarning`. Use
+  `iws.Pipeline`, which takes the same elements. SimplePipeline will be removed
+  no earlier than November 2026.
+
 ## [0.31.0] - 2026-09-30
 
 ### Added

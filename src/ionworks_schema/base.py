@@ -1,6 +1,7 @@
 """Base classes for ionworks_schema."""
 
 from typing import Any, NoReturn
+import warnings
 
 import pybamm
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -430,11 +431,14 @@ _EXPENSIVE_TYPES = frozenset({"data_fit", "array_data_fit", "validation"})
 class SimplePipeline(Pipeline):
     """A pipeline that permits at most one expensive element.
 
+    .. warning::
+        Deprecated, and removed in a future release. Use :class:`Pipeline`,
+        which accepts the same elements.
+
     ``SimplePipeline`` is identical to :class:`Pipeline` except that it
     rejects configurations containing more than one expensive element
-    (``DataFit``, ``ArrayDataFit``, or ``Validation``) at construction time.
-    Use it when you intend to submit via the SimplePipeline API endpoint,
-    which enforces the same constraint server-side.
+    (``DataFit``, ``ArrayDataFit``, or ``Validation``) at construction time,
+    matching the constraint the SimplePipeline API endpoint enforces.
 
     Parameters
     ----------
@@ -480,6 +484,18 @@ class SimplePipeline(Pipeline):
     ... )
     >>> config = pipeline.to_config()
     """
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        # Not an access-time warning, which would fire on every ``import *``.
+        warnings.warn(
+            "iws.SimplePipeline is deprecated and will be removed in a future "
+            "release. Use iws.Pipeline, which accepts the same elements, and submit "
+            "it through the regular pipeline API. Migration guide: "
+            "https://docs.ionworks.com/build/parameterize/api#migrating-to-pipeline",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(*args, **kwargs)
 
     @field_validator("elements")
     @classmethod

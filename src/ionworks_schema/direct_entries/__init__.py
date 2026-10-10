@@ -8,6 +8,7 @@ from .direct_entries import (
     InitialVoltage,
     PiecewiseInterpolation1D,
     PiecewiseInterpolation2D,
+    ProvenanceRecord,
 )
 from .function_schemas import (
     FUNCTION_SCHEMAS,
@@ -26,5 +27,6 @@ __all__ = [
     "InitialVoltage",
     "PiecewiseInterpolation1D",
     "PiecewiseInterpolation2D",
+    "ProvenanceRecord",
     *FUNCTION_SCHEMAS.keys(),
 ]
