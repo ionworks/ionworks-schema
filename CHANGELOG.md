@@ -9,6 +9,12 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.32.1] - 2026-10-20
+
+### Changed
+- Requires `pandas>=2.2.2`. Earlier pandas releases do not import alongside
+  numpy 2.
+
 ## [0.32.0] - 2026-10-09
 
 ### Added
