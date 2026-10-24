@@ -559,7 +559,9 @@ class CyclableLithium(Calculation):
     >>> calc = iws.calculations.CyclableLithium(method="electrode capacities")
     >>> config = iws.Pipeline({"cyclable_li": calc}).to_config()"""
 
-    method: str = Field(default="electrode capacities")
+    method: Literal["electrode capacities", "formation loss"] = Field(
+        default="electrode capacities"
+    )
     options: CyclableLithiumOptions | None = Field(default=None)
 
     def __init__(self, method="electrode capacities", options=None):
@@ -826,6 +828,27 @@ class ElectrodeCapacity(Calculation):
         )
 
 
+class ElectrodeBalanceFromFirstCycleEfficiency(Calculation):
+    """Stoichiometry limits and initial concentrations from the first-cycle efficiency.
+
+    .. math::
+        Q_k = c_{k,max} \\varepsilon_k L_k A \\, n_{elec} \\frac{F}{3600}, \\quad
+        Q_{p,prac} = \\frac{Q_{cell}}{\\eta}, \\quad
+        Q_{Li} = Q_p - (1 - \\eta) \\, Q_{p,prac}
+
+    with host capacities :math:`Q_k` and :math:`\\eta` the first-cycle efficiency.
+    Windows are solved as in :class:`ElectrodeSOH`; initial concentrations are at
+    100% SOC. For fitted capacities use :class:`StoichiometryLimitsFromCapacity`.
+
+    Examples
+    --------
+    >>> calc = iws.calculations.ElectrodeBalanceFromFirstCycleEfficiency()
+    >>> config = iws.Pipeline({"balance": calc}).to_config()"""
+
+    def __init__(self):
+        super().__init__()
+
+
 class ElectrodeSOH(Calculation):
     """Calculate electrode stoichiometry windows from capacity using electrode SOH algorithm.
 
@@ -877,6 +900,34 @@ class ElectrodeSOHHalfCell(Calculation):
         super().__init__(electrode=electrode, options=options)
 
 
+class ElectrodeGeometryFromLoading(Calculation):
+    """Thickness, active material volume fraction and porosity from loading.
+
+    .. math::
+        L = \\frac{m}{\\rho_{press}}, \\quad
+        \\varepsilon_{AM} = \\frac{w_{AM} \\, \\rho_{press}}{\\rho_{AM}}, \\quad
+        \\varepsilon_e = 1 - \\frac{\\varepsilon_{AM}}{f_{AM}}
+
+    with :math:`m` the coating mass per area, :math:`\\rho_{press}` the press
+    density, :math:`w_{AM}` the active material mass fraction, :math:`\\rho_{AM}`
+    its crystal density and :math:`f_{AM}` its active volume fraction of solid.
+
+    Parameters
+    ----------
+    electrode : str
+        The electrode: "positive" or "negative".
+
+    Examples
+    --------
+    >>> calc = iws.calculations.ElectrodeGeometryFromLoading("positive")
+    >>> config = iws.Pipeline({"geometry": calc}).to_config()"""
+
+    electrode: Literal["positive", "negative"] = Field(...)
+
+    def __init__(self, electrode):
+        super().__init__(electrode=electrode)
+
+
 class ElectrodeVolumeFractionFromLoading(Calculation):
     """Calculate the volume fraction of active material in the electrodes from the loading and maximum concentration or from the coating mass and crystal density.
 
@@ -888,7 +939,7 @@ class ElectrodeVolumeFractionFromLoading(Calculation):
         The method to use to calculate the volume fraction."""
 
     electrode: ElectrodeOrLumped = Field(...)
-    method: str = Field(...)
+    method: Literal["loading", "coating mass"] = Field(...)
 
     def __init__(self, electrode, method):
         super().__init__(electrode=electrode, method=method)

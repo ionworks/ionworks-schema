@@ -9,6 +9,15 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.33.0] - 2026-10-23
+
+### Added
+- `calculations.ElectrodeBalanceFromFirstCycleEfficiency`: stoichiometry limits and initial concentrations at 100% SOC in one step, from both electrodes' geometry, the nominal capacity and the first cycle efficiency (#2111)
+- `calculations.ElectrodeGeometryFromLoading(electrode)`: an electrode's thickness, active material volume fraction and porosity from its coating mass loading and press density (#2111)
+
+### Changed
+- `CyclableLithium.method` and `ElectrodeVolumeFractionFromLoading.method` are typed as their allowed values rather than free strings, so an unknown method is rejected when the config is built (#2111)
+
 ## [0.32.1] - 2026-10-20
 
 ### Changed
