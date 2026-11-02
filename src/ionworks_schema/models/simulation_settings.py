@@ -8,46 +8,30 @@ from ..base import BaseSchema
 
 
 class SimulationSettings(BaseSchema):
-    """Persistent simulation settings attached to a model or parameterized model.
+    """pybamm ``Simulation`` keyword arguments for a model, parameterized model or run.
 
-    A flat bag of pybamm ``Simulation`` keyword arguments that should be applied
-    whenever this (parameterized) model is simulated. The fields mirror the pybamm
-    kwargs exactly, so the serialized form is folded straight into
-    ``simulation_kwargs`` at solve time with no reshaping.
-
-    The required settings are parameter-dependent: a fitted solid diffusivity with
-    a steep near-surface gradient needs a refined, surface-clustered particle mesh
-    (and sometimes a specific solver) that the model defaults do not provide. All
-    fields are optional; a higher-precedence source merges over a lower one per
-    key, so a parameterized model can refine just ``r_n`` / ``r_p`` (or swap the
-    solver) without restating everything.
+    A finely resolved fit (e.g. a steep near-surface concentration gradient) can need
+    a refined particle mesh or a specific solver that the model defaults lack. Every
+    field is optional; a higher-precedence source overrides a lower one key by key.
 
     Parameters
     ----------
     var_pts : dict of str to int, optional
-        Number of mesh points per spatial variable, e.g.
-        ``{"r_n": 16, "r_p": 16}``. Stored as a plain JSON dict of ints.
+        Mesh points per spatial variable, e.g. ``{"r_n": 16, "r_p": 16}``.
     submesh_types : dict, optional
-        Mapping of domain name (e.g. ``"negative particle"``) to a serialized
-        submesh — a ``pybamm.MeshGenerator.to_config()`` payload
-        (``{"$type": "type", "class": ..., "submesh_params": {...}}``). A live
-        ``{domain: pybamm.MeshGenerator}`` mapping is accepted at construction and
-        serialized to this form by :meth:`to_config`.
+        Domain name (e.g. ``"negative particle"``) to a serialized submesh
+        (``pybamm.MeshGenerator.to_config()``); a live ``MeshGenerator`` is
+        serialized to it.
     spatial_methods : dict, optional
-        Mapping of domain name to a serialized ``pybamm.SpatialMethod``.
+        Domain name to a serialized ``pybamm.SpatialMethod``.
     geometry : dict, optional
-        Serialized geometry override. Rarely needed; when absent the geometry is
-        derived from the model.
+        Serialized geometry override; when absent it is derived from the model.
     solver : dict, optional
-        Serialized solver configuration (``pybamm.BaseSolver.to_config()`` form —
-        the solver class name under ``"type"`` plus its tolerances/options). A live
-        ``pybamm.BaseSolver`` is accepted and serialized by :meth:`to_config`.
-
-    Notes
-    -----
-    ``to_config()`` emits the flat canonical form — plain ``var_pts`` ints and
-    ``submesh_types`` as a flat per-domain map — with no ``"type"`` discriminator,
-    so the block is a plain nested dict ready to use as ``simulation_kwargs``.
+        Serialized solver (``pybamm.BaseSolver.to_config()``: the class name under
+        ``"type"`` plus its options); a live ``BaseSolver`` is serialized to it.
+    discretisation_kwargs : dict of str to bool, optional
+        ``pybamm.Discretisation`` options (``check_model``,
+        ``remove_independent_variables_from_rhs``, ``resolve_coupled_variables``).
     """
 
     # Persisted settings are a plain nested dict with no "type" key.
@@ -61,6 +45,7 @@ class SimulationSettings(BaseSchema):
     # serialized to its ``to_config()`` form by ``to_config``; a pre-serialized
     # dict is equally valid.
     solver: Any | None = Field(default=None)
+    discretisation_kwargs: dict[str, bool] | None = Field(default=None)
 
     def __init__(
         self,
@@ -69,6 +54,7 @@ class SimulationSettings(BaseSchema):
         spatial_methods=None,
         geometry=None,
         solver=None,
+        discretisation_kwargs=None,
         **extra: Any,
     ):
         super().__init__(
@@ -77,6 +63,7 @@ class SimulationSettings(BaseSchema):
             spatial_methods=spatial_methods,
             geometry=geometry,
             solver=solver,
+            discretisation_kwargs=discretisation_kwargs,
             **extra,
         )
 

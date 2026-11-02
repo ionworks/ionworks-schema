@@ -65,6 +65,28 @@ class CyclableLithiumOptions(_CalculationOptions):
     )
 
 
+_OCPOption = str | tuple[str, str]
+
+
+class ElectrodeBalanceFromFirstCycleEfficiencyOptions(_CalculationOptions):
+    """Options for :class:`ElectrodeBalanceFromFirstCycleEfficiency`."""
+
+    particle_phases: _ParticlePhasesPair = Field(
+        default=("1", "1"),
+        alias="particle phases",
+        description="Phases in the (negative, positive) electrodes.",
+    )
+    open_circuit_potential: _OCPOption | tuple[_OCPOption, _OCPOption] = Field(
+        default="single",
+        alias="open-circuit potential",
+        description=(
+            "The model's 'open-circuit potential' option. With hysteresis, the "
+            "limits use the charge branch at 100% SOC and the discharge branch at "
+            "0% SOC."
+        ),
+    )
+
+
 class InitialSOCfromMaximumStoichiometryOptions(_CalculationOptions):
     """Options for :class:`InitialSOCfromMaximumStoichiometry`."""
 
@@ -829,24 +851,37 @@ class ElectrodeCapacity(Calculation):
 
 
 class ElectrodeBalanceFromFirstCycleEfficiency(Calculation):
-    """Stoichiometry limits and initial concentrations from the first-cycle efficiency.
+    """Stoichiometry limits and initial concentrations after formation.
 
     .. math::
-        Q_k = c_{k,max} \\varepsilon_k L_k A \\, n_{elec} \\frac{F}{3600}, \\quad
-        Q_{p,prac} = \\frac{Q_{cell}}{\\eta}, \\quad
-        Q_{Li} = Q_p - (1 - \\eta) \\, Q_{p,prac}
+        Q_{Li} = \\eta Q_p
 
-    with host capacities :math:`Q_k` and :math:`\\eta` the first-cycle efficiency.
-    Windows are solved as in :class:`ElectrodeSOH`; initial concentrations are at
-    100% SOC. For fitted capacities use :class:`StoichiometryLimitsFromCapacity`.
+    with :math:`\\eta` the "First cycle efficiency" and :math:`Q_p` the positive
+    electrode's host capacity, summed over phases, so the loss follows the cathode
+    loading. Limits and 100% SOC initial concentrations are per phase.
+
+    Parameters
+    ----------
+    options : ElectrodeBalanceFromFirstCycleEfficiencyOptions or dict, optional
+        See :class:`ElectrodeBalanceFromFirstCycleEfficiencyOptions`.
+
+    See Also
+    --------
+    StoichiometryLimitsFromCapacity : for fitted capacities.
 
     Examples
     --------
-    >>> calc = iws.calculations.ElectrodeBalanceFromFirstCycleEfficiency()
+    >>> calc = iws.calculations.ElectrodeBalanceFromFirstCycleEfficiency(
+    ...     options={"particle phases": ("2", "1")}
+    ... )
     >>> config = iws.Pipeline({"balance": calc}).to_config()"""
 
-    def __init__(self):
-        super().__init__()
+    options: ElectrodeBalanceFromFirstCycleEfficiencyOptions | None = Field(
+        default=None
+    )
+
+    def __init__(self, options=None):
+        super().__init__(options=options)
 
 
 class ElectrodeSOH(Calculation):

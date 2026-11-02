@@ -9,6 +9,15 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.34.0] - 2026-11-02
+
+### Breaking changes
+- `calculations.ElectrodeBalanceFromFirstCycleEfficiency` no longer reads `"Nominal cell capacity [A.h]"`; cyclable lithium is first cycle efficiency times positive electrode capacity, so existing configs give different stoichiometry limits (#2613)
+
+### Added
+- `models.SimulationSettings(discretisation_kwargs=...)` carries `pybamm.Discretisation` options for a model, parameterized model or simulation run (#2598)
+- `calculations.ElectrodeBalanceFromFirstCycleEfficiency(options=...)`: composite electrodes via `particle phases`; the formation loss is now taken against positive electrode capacity, not nominal capacity (#2613)
+
 ## [0.33.0] - 2026-10-23
 
 ### Added
