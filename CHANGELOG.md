@@ -9,6 +9,14 @@ see [docs.ionworks.com/changelog](https://docs.ionworks.com/changelog).
 
 <!-- New release sections are prepended below by the release-packages skill. -->
 
+## [0.35.0] - 2026-11-03
+
+### Deprecated
+
+- ionworks-schema is deprecated and will receive no further releases. Its functionality now lives in the 'ionworks' package: https://packages.docs.ionworks.com/ionworks/migration.html (#2676)
+- README points to the ionworks package. (#2676)
+- The sdist contains only the package source. (#2676)
+
 ## [0.34.0] - 2026-11-02
 
 ### Breaking changes

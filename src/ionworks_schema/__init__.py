@@ -11,8 +11,15 @@ The schemas validate as you build them: bad field types or missing
 required fields raise immediately, so you find mistakes locally
 before they reach the server.
 """
+# ruff: noqa: E402
 
 import warnings
+
+warnings.warn(
+    "ionworks-schema is deprecated and will receive no further releases. Its functionality now lives in the 'ionworks' package: https://packages.docs.ionworks.com/ionworks/migration.html",
+    FutureWarning,
+    stacklevel=2,
+)
 
 try:
     from importlib.metadata import version
